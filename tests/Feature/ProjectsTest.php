@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\User;
+use App\Project;
 
 class ProjectsTest extends TestCase
 {
@@ -15,12 +16,13 @@ class ProjectsTest extends TestCase
 
     public function a_user_can_create_a_project()
     {
-        $this->actingAs(factory(User::class)->create());
+        $user = $this->login();
 
         $this->post('/project', [
             'title' => 'A New Project',
-            'description' => 'An awesome project'
-        ])->assertRedirect('/');
+            'description' => 'An awesome project',
+            'user_id' => $user->id
+        ])->assertRedirect('/project');
 
         $this->assertDatabaseHas('projects', [
             'title' => 'A New Project',
@@ -32,11 +34,12 @@ class ProjectsTest extends TestCase
     
     public function a_user_cannot_create_a_project_if_title_empty()
     {
-        $this->actingAs(factory(User::class)->create());
+        $user = $this->login();
         
         $this->post('/project', [
             'title' => '',
-            'description' => 'An awesome project'
+            'description' => 'An awesome project',
+            'user_id' => $user->id
         ]);
 
         $this->assertDatabaseMissing('projects', [
@@ -49,11 +52,12 @@ class ProjectsTest extends TestCase
     
     public function a_user_cannot_create_a_project_if_description_empty()
     {
-        $this->actingAs(factory(User::class)->create());
+        $user = $this->login();
         
         $this->post('/project', [
             'title' => 'A New Project',
-            'description' => ''
+            'description' => '',
+            'user_id' => $user->id
         ]);
 
         $this->assertDatabaseMissing('projects', [
@@ -65,9 +69,7 @@ class ProjectsTest extends TestCase
     /**  @test */
     
     public function a_user_cannot_create_a_project_if_not_logged_in()
-    {
-        // $this->withoutExceptionHandling();
-        
+    {        
         $this->post('/project', [
             'title' => 'A New Project',
             'description' => 'An awesome project'
@@ -77,5 +79,30 @@ class ProjectsTest extends TestCase
             'title' => 'A New Project',
             'description' => 'An awesome project'
         ]);
+    }
+
+    /**  @test */
+    
+    public function a_project_has_an_associated_user()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = $this->login();
+
+        $this->post('/project', [
+            'title' => 'A New Project',
+            'description' => 'An awesome project',
+            'user_id' => $user->id
+        ]);
+
+        $this->assertEquals(Project::find(1)->user->id, $user->id);
+
+        $this->post('/project', [
+            'title' => 'A Second Project',
+            'description' => 'A good project',
+            'user_id' => $user->id
+        ]);
+
+        $this->assertEquals(Project::find(2)->user->id, $user->id);
     }
 }

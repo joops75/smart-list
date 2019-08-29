@@ -37,12 +37,13 @@ class ProjectController extends Controller
     {
         $project = $this->validate($request, [
             'title' => 'required',
-            'description' => 'required'
+            'description' => 'required',
+            'user_id' => 'required'
         ]);
         
         Project::create($project);
 
-        return redirect('/');
+        return redirect('/project');
     }
 
     /**
