@@ -14,7 +14,9 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
+        $projects = Project::find(auth()->user()->id)->all();
+
+        return view('projects')->withProjects($projects);
     }
 
     /**
