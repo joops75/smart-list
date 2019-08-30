@@ -85,8 +85,6 @@ class ProjectsTest extends TestCase
     
     public function a_project_has_an_associated_user()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->login();
 
         $this->post('/project', [
@@ -104,5 +102,53 @@ class ProjectsTest extends TestCase
         ]);
 
         $this->assertEquals(Project::find(2)->user->id, $user->id);
+    }
+
+    /**  @test */
+    
+    public function a_project_can_be_seen_after_creation()
+    {
+        $user = $this->login();
+
+        $this->post('/project', [
+            'title' => 'A New Project',
+            'description' => 'An awesome project',
+            'user_id' => $user->id
+        ]);
+
+        $this->post('/project', [
+            'title' => 'A Second Project',
+            'description' => 'A good project',
+            'user_id' => $user->id
+        ]);
+
+        $this->get('/project')
+            ->assertSee('A New Project');
+
+            $this->get('/project')
+                ->assertSee('A Second Project');
+    }
+
+    /**  @test */
+    
+    public function a_project_can_have_associated_tasks()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = $this->login();
+
+        $project = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        
+        $task = [
+            'project_id' => $project->id,
+            'name' => 'A New Task',
+            'due_by' => now()->addMinutes(5)
+        ];
+        $this->post('/task', $task);
+        
+        $this->assertEquals($project->tasks()->first()->name, $task['name']);
+        $this->assertEquals($user->projects()->first()->tasks()->first()->name, $task['name']);
     }
 }
