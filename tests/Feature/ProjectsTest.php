@@ -73,7 +73,7 @@ class ProjectsTest extends TestCase
         $this->post('/project', [
             'title' => 'A New Project',
             'description' => 'An awesome project'
-        ]);
+        ])->assertRedirect('/login');
 
         $this->assertDatabaseMissing('projects', [
             'title' => 'A New Project',
@@ -133,8 +133,6 @@ class ProjectsTest extends TestCase
     
     public function a_project_can_have_associated_tasks()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->login();
 
         $project = factory(Project::class)->create([
@@ -150,5 +148,50 @@ class ProjectsTest extends TestCase
         
         $this->assertEquals($project->tasks()->first()->name, $task['name']);
         $this->assertEquals($user->projects()->first()->tasks()->first()->name, $task['name']);
+    }
+
+    /**  @test */
+    
+    public function a_user_can_delete_a_project_and_all_associated_tasks_simultaneously()
+    {
+        $user = $this->login();
+
+        $project1 = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        
+        $task1 = [
+            'project_id' => $project1->id,
+            'name' => 'A New Task',
+            'due_by' => now()->addMinutes(5)
+        ];
+        $this->post('/task', $task1);
+        
+        $task2 = [
+            'project_id' => $project1->id,
+            'name' => 'A Second Task',
+            'due_by' => now()->addMinutes(15)
+        ];
+        $this->post('/task', $task2);
+
+        $project2 = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        
+        $task3 = [
+            'project_id' => $project2->id,
+            'name' => 'A Third Task',
+            'due_by' => now()->addMinutes(25)
+        ];
+        $this->post('/task', $task3);
+        
+        $this->delete('/project/' . $project1->id);
+
+        $this->assertDatabaseMissing('projects', ['title' => $project1->title]);
+        $this->assertDatabaseMissing('tasks', $task1);
+        $this->assertDatabaseMissing('tasks', $task2);
+
+        $this->assertDatabaseHas('projects', ['title' => $project2->title]);
+        $this->assertDatabaseHas('tasks', $task3);
     }
 }

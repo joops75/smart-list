@@ -90,6 +90,8 @@ class ProjectController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Project::destroy($id);
+
+        return response()->json('ok', 200);
     }
 }
