@@ -21,7 +21,7 @@ class ProjectsTest extends TestCase
         $this->post('/project', [
             'title' => 'A New Project',
             'description' => 'An awesome project',
-            'user_id' => $user->id
+            
         ])->assertRedirect('/project');
 
         $this->assertDatabaseHas('projects', [
@@ -39,7 +39,7 @@ class ProjectsTest extends TestCase
         $this->post('/project', [
             'title' => '',
             'description' => 'An awesome project',
-            'user_id' => $user->id
+            
         ]);
 
         $this->assertDatabaseMissing('projects', [
@@ -57,7 +57,7 @@ class ProjectsTest extends TestCase
         $this->post('/project', [
             'title' => 'A New Project',
             'description' => '',
-            'user_id' => $user->id
+            
         ]);
 
         $this->assertDatabaseMissing('projects', [
@@ -90,7 +90,7 @@ class ProjectsTest extends TestCase
         $this->post('/project', [
             'title' => 'A New Project',
             'description' => 'An awesome project',
-            'user_id' => $user->id
+            
         ]);
 
         $this->assertEquals(Project::find(1)->user->id, $user->id);
@@ -98,35 +98,10 @@ class ProjectsTest extends TestCase
         $this->post('/project', [
             'title' => 'A Second Project',
             'description' => 'A good project',
-            'user_id' => $user->id
+            
         ]);
 
         $this->assertEquals(Project::find(2)->user->id, $user->id);
-    }
-
-    /**  @test */
-    
-    public function a_project_can_be_seen_after_creation()
-    {
-        $user = $this->login();
-
-        $this->post('/project', [
-            'title' => 'A New Project',
-            'description' => 'An awesome project',
-            'user_id' => $user->id
-        ]);
-
-        $this->post('/project', [
-            'title' => 'A Second Project',
-            'description' => 'A good project',
-            'user_id' => $user->id
-        ]);
-
-        $this->get('/project')
-            ->assertSee('A New Project');
-
-            $this->get('/project')
-                ->assertSee('A Second Project');
     }
 
     /**  @test */
