@@ -14,8 +14,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::find(auth()->user()->id)->all();
-
+        $projects = auth()->user()->projects()->get();
+        
         return view('projects')->withProjects($projects);
     }
 
@@ -39,11 +39,10 @@ class ProjectController extends Controller
     {
         $project = $this->validate($request, [
             'title' => 'required',
-            'description' => 'required',
-            'user_id' => 'required'
+            'description' => 'required'
         ]);
         
-        Project::create($project);
+        Project::create(array_merge($project, ['user_id' => auth()->user()->id]));
 
         return redirect('/project');
     }
