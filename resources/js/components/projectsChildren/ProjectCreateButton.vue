@@ -1,6 +1,6 @@
 <template>
     <div>
-        <button type="button" class="btn btn-primary" @click="handleClick" data-mode="Create" data-toggle="modal" data-target="#createProjectModal">
+        <button type="button" class="btn btn-primary" @click="handleClick" data-toggle="modal" data-target="#createProjectModal">
             Create New Project
         </button>
     </div>
@@ -8,6 +8,10 @@
 
 <script>
 export default {
-    props: ['handleClick']
+    methods: {
+        handleClick() {
+            this.$parent.$emit('create');
+        }
+    }
 }
 </script>

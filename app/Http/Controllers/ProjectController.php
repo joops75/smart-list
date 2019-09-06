@@ -14,7 +14,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = auth()->user()->projects()->get();
+        $projects = auth()->user()->projects()->orderBy('id', 'asc')->get();
         
         return view('projects')->withProjects($projects);
     }
@@ -44,7 +44,7 @@ class ProjectController extends Controller
         
         Project::create(array_merge($project, ['user_id' => auth()->user()->id]));
 
-        return redirect('/project');
+        return response()->json('ok', 200);
     }
 
     /**
@@ -76,9 +76,16 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Project $project)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required',
+            'description' => 'required'
+        ]);
+
+        $project->update([ 'title' => request('title'), 'description' => request('description')]);
+
+        return response()->json('ok', 200);
     }
 
     /**

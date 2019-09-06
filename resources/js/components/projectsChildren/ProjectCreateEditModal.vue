@@ -12,16 +12,16 @@
                     <form>
                         <div class="form-group">
                             <label for="projectTitle">Title</label>
-                            <input type="text" class="form-control" id="projectTitle" name="title" :value="currentProject.title" required>
+                            <input type="text" class="form-control" id="projectTitle" name="title" v-model="project.title">
                         </div>
                         <div class="form-group">
                             <label for="projectDescription">Description</label>
-                            <textarea class="form-control" id="projectDescription" rows="3" name="description" :value="currentProject.description" required></textarea>
+                            <textarea class="form-control" id="projectDescription" rows="3" name="description" v-model="project.description"></textarea>
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" @click="handleSubmit">{{ mode }} Project</button>
+                            <button type="button" class="btn btn-primary" @click="handleSubmit" :disabled="!isValid">{{ mode }} Project</button>
                         </div>
                     </form>
                 </div>
@@ -31,7 +31,57 @@
 </template>
 
 <script>
+class Project {
+    constructor(project) {
+        this.title = project.title || '';
+        this.description = project.description || '';
+        this.id = project.id || '';
+    }
+}
 export default {
-    props: ['mode', 'handleSubmit', 'currentProject']
+    data() {
+        return {
+            project: {},
+            mode: ''
+        }
+    },
+    mounted() {
+        this.$parent.$on('create', () => {
+            this.mode = 'Create';
+            this.project = new Project({});
+        });
+        this.$parent.$on('edit', project => {
+            this.mode = 'Edit';
+            this.project = new Project(project);
+        });
+    },
+    methods: {
+        handleSubmit() {
+            if (this.mode == 'Create') {
+                axios.post('/project', {
+                    title: this.project.title,
+                    description: this.project.description
+                }).then(res => {
+                    window.location.reload();
+                }).catch(err => {
+                    console.log(err);
+                });
+            } else if (this.mode == 'Edit') {
+                axios.put(`/project/${this.project.id}`, {
+                    title: this.project.title,
+                    description: this.project.description
+                }).then(res => {
+                    window.location.reload();
+                }).catch(err => {
+                    console.log(err);
+                });
+            }
+        }
+    },
+    computed: {
+        isValid() {
+            return this.project.title && this.project.description;
+        }
+    }
 }
 </script>

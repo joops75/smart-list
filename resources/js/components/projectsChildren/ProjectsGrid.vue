@@ -5,10 +5,7 @@
             <button
                 type="button"
                 class="btn btn-primary"
-                @click="handleClick"
-                data-mode="Edit"
-                :data-projectTitle="project.title"
-                :data-projectDescription="project.description"
+                @click="handleClick(project)"
                 data-toggle="modal"
                 data-target="#createProjectModal"
             >
@@ -20,6 +17,11 @@
 
 <script>
 export default {
-    props: ['projects', 'handleClick']
+    props: ['projects'],
+    methods: {
+        handleClick(project) {
+            this.$parent.$emit('edit', project);
+        }
+    }
 }
 </script>
