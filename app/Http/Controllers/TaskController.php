@@ -40,10 +40,10 @@ class TaskController extends Controller
             'name' => 'required',
             'due_by' => 'required'
         ]);
-
+        
         Task::create($task);
 
-        return redirect()->back()->withErrors($task)->withInput();
+        return response()->json('ok', 200);
     }
 
     /**
