@@ -22,7 +22,7 @@ class ProjectsTest extends TestCase
             'title' => 'A New Project',
             'description' => 'An awesome project',
             
-        ])->assertRedirect('/project');
+        ])->assertStatus(200);
 
         $this->assertDatabaseHas('projects', [
             'title' => 'A New Project',
@@ -168,5 +168,29 @@ class ProjectsTest extends TestCase
 
         $this->assertDatabaseHas('projects', ['title' => $project2->title]);
         $this->assertDatabaseHas('tasks', $task3);
+    }
+
+    /**  @test */
+    
+    public function a_project_and_tasks_are_sent_to_the_show_page_when_viewing_a_single_project()
+    {
+        $this->withoutExceptionHandling();
+        $user = $this->login();
+
+        $project1 = factory(Project::class)->create([
+            'user_id' => $user->id
+        ]);
+        
+        $task1 = [
+            'project_id' => $project1->id,
+            'name' => 'A New Task',
+            'due_by' => now()->addMinutes(5)
+        ];
+        $this->post('/task', $task1);
+
+        $this->get('/project/' . $project1->id)
+            ->assertStatus(200)
+            ->assertSee($project1->title)
+            ->assertSee('A New Task');
     }
 }

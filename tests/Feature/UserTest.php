@@ -21,7 +21,7 @@ class UserTest extends TestCase
             'title' => 'A New Project',
             'description' => 'An awesome project',
             'user_id' => $user->id
-        ])->assertRedirect('/project');
+        ])->assertStatus(200);
 
         $this->assertEquals($user->projects()->first()->title, 'A New Project');
     }
