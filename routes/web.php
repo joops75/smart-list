@@ -22,5 +22,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('task', 'TaskController')->only([
-    'index', 'store', 'destroy'
+    'index', 'store', 'update', 'destroy'
 ])->middleware('auth');
