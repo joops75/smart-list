@@ -39,8 +39,9 @@ import { dueBy, getYearMonthDay } from '../../helpers/dateFunctions';
 class Task {
     constructor(task) {
         this.name = task.name || '';
-        this.due_by = task.due_by ? dueBy(task.due_by) : getYearMonthDay(new Date()) + ' 17:00';
+        this.due_by = task.due_by || getYearMonthDay(new Date()) + ' 17:00';
         this.completed = task.completed || false;
+        this.id = task.id || '';
     }
 }
 export default {
@@ -55,9 +56,9 @@ export default {
             this.mode = 'Create';
             this.task = new Task({});
         });
-        this.$parent.$on('edit', task => {
+        this.$parent.$on('editTask', task => {
             this.mode = 'Edit';
-            this.task = new Task(task);
+            this.task = new Task({ ...task, due_by: dueBy(task.due_by) });
         });
     },
     methods: {
@@ -75,8 +76,9 @@ export default {
                 });
             } else if (this.mode == 'Edit') {
                 axios.put(`/task/${this.task.id}`, {
-                    title: this.task.title,
-                    description: this.task.description
+                    name: this.task.name,
+                    due_by: new Date(this.task.due_by),
+                    completed: this.task.completed
                 }).then(res => {
                     window.location.reload();
                 }).catch(err => {
@@ -87,7 +89,7 @@ export default {
     },
     computed: {
         isValid() {
-            return this.task.name && this.task.due_by;
+            return this.task.name && this.task.due_by && new Date(this.task.due_by).getDate();
         }
     }
 }
