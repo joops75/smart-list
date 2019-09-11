@@ -12,9 +12,9 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Support\Collection
      */
-    public function index($project_id)
+    public function index()
     {
-        return Task::where('project_id', '=', $project_id);
+        //
     }
 
     /**
