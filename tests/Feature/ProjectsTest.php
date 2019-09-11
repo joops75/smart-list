@@ -187,10 +187,40 @@ class ProjectsTest extends TestCase
             'due_by' => now()->addMinutes(5)
         ];
         $this->post('/task', $task1);
+        
+        $task2 = [
+            'project_id' => 99999,
+            'name' => 'Another Task',
+            'due_by' => now()->addMinutes(15)
+        ];
+        $this->post('/task', $task2);
 
         $this->get('/project/' . $project1->id)
             ->assertStatus(200)
             ->assertSee($project1->title)
-            ->assertSee('A New Task');
+            ->assertSee('A New Task')
+            ->assertDontSee('Another Task');
+    }
+
+    /**  @test */
+    
+    public function a_user_can_edit_a_project()
+    {
+        $user = $this->login();
+
+        $project = factory(Project::class)->create(['user_id' => 1]);
+
+        $this->assertDatabaseHas('projects', $project->toArray());
+
+        $editedProject = [
+            'title' => 'An Edited Title',
+            'description' => 'An Edited Description'
+        ];
+
+        $this->put("/project/$project->id", $editedProject);
+
+        $this->assertDatabaseMissing('projects', $project->toArray());
+
+        $this->assertDatabaseHas('projects', $editedProject);
     }
 }

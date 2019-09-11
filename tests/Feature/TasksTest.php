@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Task;
 
 class TasksTest extends TestCase
 {
@@ -70,5 +71,28 @@ class TasksTest extends TestCase
         $this->assertDatabaseMissing('tasks', $task1);
 
         $this->assertDatabaseHas('tasks', $task2);
+    }
+
+    /**  @test */
+    
+    public function a_user_can_edit_a_task()
+    {
+        $user = $this->login();
+
+        $task = factory(Task::class)->create(['project_id' => 1]);
+
+        $this->assertDatabaseHas('tasks', $task->toArray());
+
+        $editedtask = [
+            'name' => 'An Edited Name',
+            'due_by' => now()->addMinutes(5),
+            'completed' => true
+        ];
+
+        $this->put("/task/$task->id", $editedtask);
+
+        $this->assertDatabaseMissing('tasks', $task->toArray());
+
+        $this->assertDatabaseHas('tasks', $editedtask);
     }
 }
