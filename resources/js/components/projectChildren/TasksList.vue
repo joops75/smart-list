@@ -1,9 +1,12 @@
 <template>
     <div>
         <div v-for="task in tasks" :key="task.id">
-            <span>{{ task.name }}</span>
-            <span>{{ dueBy(task.due_by) }}</span>
-            <span>{{ timer(task.due_by) }}</span>
+            <span :style="getStyle(task.completed)">
+                <span>{{ task.name }}</span>
+                <span>{{ dueBy(task.due_by) }}</span>
+                <span>{{ timer(task.due_by) }}</span>
+            </span>
+            <input type="checkbox" id="taskDueBy" name="completed" @click="changeStatus(task)" :checked="task.completed">
             <button
                 type="button"
                 class="btn btn-primary"
@@ -21,7 +24,7 @@
 </template>
 
 <script>
-import { dueBy, timer } from '../../helpers/dateFunctions';
+import { dueBy, timeRemainingString } from '../../helpers/dateFunctions';
 import { setInterval } from 'timers';
 export default {
     props: ['tasks'],
@@ -35,7 +38,7 @@ export default {
     beforeMount() {
         this.timerId = setInterval(() => {
             this.secondsElapsed = Date.now() / 1000 - this.startSeconds;
-        }, 1000);
+        }, 1000 * 20);
     },
     destroyed() {
         clearInterval(this.timerId);
@@ -59,30 +62,18 @@ export default {
                 });
         },
         timer(dueBy) {
-            const secondsRemaining = Math.floor(timer(dueBy, this.secondsElapsed) - this.startSeconds);
-            const minute = 60;
-            const hour = minute * 60;
-            const day = hour * 24;
-            const week = day * 7;
-            const month = day * 31;
-            const year = day * 365;
-            let value;
-            let unit;
-            if (secondsRemaining > year || secondsRemaining < -year) { value = Math.ceil(secondsRemaining / year); unit = 'year'; }
-            else if (secondsRemaining > month || secondsRemaining < -month) { value = Math.ceil(secondsRemaining / month); unit = 'month'; }
-            else if (secondsRemaining > week || secondsRemaining < -week) { value = Math.ceil(secondsRemaining / week); unit = 'week'; }
-            else if (secondsRemaining > day || secondsRemaining < -day) { value = Math.ceil(secondsRemaining / day); unit = 'day'; }
-            else if (secondsRemaining > hour || secondsRemaining < -hour) { value = Math.ceil(secondsRemaining / hour); unit = 'hour'; }
-            else if (secondsRemaining > minute || secondsRemaining < -minute) { value = Math.ceil(secondsRemaining / minute); unit = 'minute'; }
-            else { value = secondsRemaining; unit = 'second'; }
-
-            if (value > 0) {
-                return `due in under ${value} ${unit}${value === 1 ? '' : 's'}`;
-            } else if (value === 0) {
-                return 'due now';
-            } else {
-                return `due over ${-value} ${unit}${-value === 1 ? '' : 's'} ago`;
-            }
+            return timeRemainingString(dueBy, this.secondsElapsed, this.startSeconds);
+        },
+        changeStatus(task) {
+            axios.put(`/task/${task.id}`, {completed: !task.completed})
+                .then(() => {
+                    window.location.reload();
+                }).catch(err => {
+                    console.log(err);
+                })
+        },
+        getStyle(completed) {
+            return completed ? 'text-decoration: line-through' : '';
         }
     }
     
