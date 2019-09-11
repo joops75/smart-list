@@ -55,7 +55,10 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return view('project')->withProject($project)->withTasks($project->tasks()->orderBy('id', 'desc')->get());
+        return view('project')->withProject($project)
+                                ->withTasks($project->tasks()
+                                ->orderBy('due_by', 'asc')
+                                ->get());
     }
 
     /**
