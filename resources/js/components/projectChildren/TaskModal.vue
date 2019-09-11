@@ -20,7 +20,7 @@
                         </div>
                         <div class="form-group">
                             <label for="taskDueBy">Completed</label>
-                            <input type="checkbox" class="form-control" id="taskDueBy" name="completed" :checked="task.completed">
+                            <input type="checkbox" id="taskDueBy" name="completed" @click="changeStatus" :checked="task.completed">
                         </div>
 
                         <div class="modal-footer">
@@ -85,6 +85,9 @@ export default {
                     console.log(err);
                 });
             }
+        },
+        changeStatus() {
+            this.task.completed = !this.task.completed;
         }
     },
     computed: {
