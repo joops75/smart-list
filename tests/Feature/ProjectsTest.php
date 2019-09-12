@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\User;
 use App\Project;
+use App\Task;
 
 class ProjectsTest extends TestCase
 {
@@ -222,5 +223,41 @@ class ProjectsTest extends TestCase
         $this->assertDatabaseMissing('projects', $project->toArray());
 
         $this->assertDatabaseHas('projects', $editedProject);
+    }
+
+    /**  @test */
+    
+    public function a_user_can_get_a_project_along_with_only_incomplete_tasks()
+    {
+        $user = $this->login();
+
+        $project = factory(Project::class)->create(['user_id' => 1]);
+
+        $task1 = factory(Task::class)->create(['project_id' => $project->id]);
+        $task2 = factory(Task::class)->create(['project_id' => $project->id, 'completed' => true]);
+        $task3 = factory(Task::class)->create(['project_id' => 99999]);
+
+        $this->get("/project/$project->id?get=incomplete")
+                ->assertSee($task1->name)
+                ->assertDontSee($task2->name)
+                ->assertDontSee($task3->name);        
+    }
+
+    /**  @test */
+    
+    public function a_user_can_get_a_project_along_with_only_completed_tasks()
+    {
+        $user = $this->login();
+
+        $project = factory(Project::class)->create(['user_id' => 1]);
+
+        $task1 = factory(Task::class)->create(['project_id' => $project->id]);
+        $task2 = factory(Task::class)->create(['project_id' => $project->id, 'completed' => true]);
+        $task3 = factory(Task::class)->create(['project_id' => 99999]);
+
+        $this->get("/project/$project->id?get=completed")
+                ->assertDontSee($task1->name)
+                ->assertSee($task2->name)
+                ->assertDontSee($task3->name);        
     }
 }

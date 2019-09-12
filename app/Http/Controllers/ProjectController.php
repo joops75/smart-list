@@ -53,10 +53,30 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show(Request $request, Project $project)
     {
-        return view('project')->withProject($project)
+        $getQuery = $request->query('get');
+        $getType;
+        if ($getQuery === 'completed') {
+            $getType = 'completed';
+        } elseif ($getQuery === 'incomplete') {
+            $getType = 'incomplete';
+        } else {
+            $getType = 'all';
+        }
+        
+        if ($getType === 'all') {
+            return view('project')->withGetType($getType)
+                                    ->withProject($project)
+                                    ->withTasks($project->tasks()
+                                    ->orderBy('due_by', 'asc')
+                                    ->get());
+        }
+
+        return view('project')->withGetType($getType)
+                                ->withProject($project)
                                 ->withTasks($project->tasks()
+                                ->where('completed', $getType === 'completed')
                                 ->orderBy('due_by', 'asc')
                                 ->get());
     }
