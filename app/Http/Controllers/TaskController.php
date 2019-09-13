@@ -41,7 +41,7 @@ class TaskController extends Controller
             'due_by' => 'required'
         ]);
         
-        Task::create($task);
+        Task::create(request()->all());
 
         return response()->json('ok', 200);
     }
