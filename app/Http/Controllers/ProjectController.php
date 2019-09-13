@@ -117,9 +117,13 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        Project::destroy($id);
+        if($request->query('deleteOnlyCompletedTasks')) {
+            Project::find($id)->tasks()->where('completed', true)->delete();
+        } else {
+            Project::destroy($id);
+        }
 
         return response()->json('ok', 200);
     }

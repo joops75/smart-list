@@ -260,4 +260,25 @@ class ProjectsTest extends TestCase
                 ->assertSee($task2->name)
                 ->assertDontSee($task3->name);        
     }
+
+    /**  @test */
+    
+    public function a_user_can_simultaneously_delete_all_the_completed_tasks_of_a_project()
+    {
+        $user = $this->login();
+
+        $project = factory(Project::class)->create(['user_id' => 1]);
+
+        $task1 = factory(Task::class)->create(['project_id' => $project->id]);
+        $task2 = factory(Task::class)->create(['project_id' => $project->id, 'completed' => true]);
+        $task3 = factory(Task::class)->create(['project_id' => $project->id]);
+        $task4 = factory(Task::class)->create(['project_id' => $project->id, 'completed' => true]);
+
+        $this->delete("/project/$project->id?deleteOnlyCompletedTasks=true");
+
+        $this->assertDatabaseHas('tasks', $task1->toArray());
+        $this->assertDatabaseMissing('tasks', $task2->toArray());
+        $this->assertDatabaseHas('tasks', $task3->toArray());
+        $this->assertDatabaseMissing('tasks', $task4->toArray());
+    }
 }

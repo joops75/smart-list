@@ -14,6 +14,7 @@
 
         <div v-if="tasks.length">
             <tasks-list :tasks="tasks"></tasks-list>
+            <button type="button" class="btn btn-danger" @click="deleteCompletedTasks" :disabled="!completedTasks">Delete All Completed Tasks</button>
         </div>
 
         <div v-else>
@@ -23,6 +24,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     props: ['project_json', 'tasks_json', 'get_type'],
     components: {
@@ -30,17 +33,36 @@ export default {
         'task-create-button': require('./projectChildren/TaskCreateButton.vue').default,
         'tasks-list': require('./projectChildren/TasksList.vue').default
     },
+    data() {
+        return {
+            project: {},
+            tasks: [],
+            completedTasks: false
+        }
+    },
+    created() {
+        this.project = JSON.parse(this.project_json);
+        this.tasks = JSON.parse(this.tasks_json);
+        this.completedTasks = this.tasks.some(task => task.completed);
+    },
     methods: {
         navigate(e) {
             window.location.assign(e.target.dataset.url);
-        }
-    },
-    computed: {
-        project() {
-            return JSON.parse(this.project_json);
         },
-        tasks() {
-            return JSON.parse(this.tasks_json);
+        deleteCompletedTasks() {
+            if (!confirm('Are you sure you want to delete all completed tasks for this project?')) {
+                return;
+            }
+            
+            axios.delete(`/project/${this.project.id}`, {
+                params: {
+                    deleteOnlyCompletedTasks: true
+                }
+            }).then(() => {
+                window.location.reload();
+            }).catch(err => {
+                console.log(err);
+            });
         }
     }
 }
