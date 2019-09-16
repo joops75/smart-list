@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Project;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectController extends Controller
 {
@@ -12,11 +14,51 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $projects = auth()->user()->projects()->orderBy('id', 'asc')->get();
+        $getQuery = $request->query('get');
+        $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' && $getQuery !== 'empty' ? 'all' : $getQuery;
         
-        return view('projects')->withProjects($projects);
+        $projects;
+        if ($getType === 'completed') {
+            $projects = Auth()->user()->projects()->withCount([
+                'tasks',
+                'tasks as completed_tasks_count' => function (Builder $query) {
+                    $query->where('completed', true);
+                }
+            ])->orderBy('id', 'desc')->get();
+            
+            $requestededProjectedIds = [];
+            foreach ($projects as $project) {
+                if ($project->tasks_count && $project->tasks_count === $project->completed_tasks_count){
+                    array_push($requestededProjectedIds, $project->id);
+                }
+            }
+
+            $projects = DB::table('projects')->whereIn('id', $requestededProjectedIds)->orderBy('id', 'desc')->get();
+        } else if ($getType === 'incomplete') {
+            $userProjectIds = auth()->user()->projects->pluck('id');
+            $requestededProjectedIds = DB::table('tasks')->whereIn('project_id', $userProjectIds)->where('completed', $getType === 'completed')->pluck('project_id');
+            
+            $projects = DB::table('projects')->whereIn('id', $requestededProjectedIds)->orderBy('id', 'desc')->get();
+        } else if ($getType === 'empty') {
+            $projects = Auth()->user()->projects()->withCount([
+                'tasks'
+            ])->orderBy('id', 'desc')->get();
+            
+            $requestededProjectedIds = [];
+            foreach ($projects as $project) {
+                if (!$project->tasks_count){
+                    array_push($requestededProjectedIds, $project->id);
+                }
+            }
+
+            $projects = DB::table('projects')->whereIn('id', $requestededProjectedIds)->orderBy('id', 'desc')->get();
+        } else {
+            $projects = auth()->user()->projects()->orderBy('id', 'desc')->get();
+        }
+        
+        return view('projects')->withProjects($projects)->withGetType($getType);
     }
 
     /**
@@ -56,14 +98,7 @@ class ProjectController extends Controller
     public function show(Request $request, Project $project)
     {
         $getQuery = $request->query('get');
-        $getType;
-        if ($getQuery === 'completed') {
-            $getType = 'completed';
-        } elseif ($getQuery === 'incomplete') {
-            $getType = 'incomplete';
-        } else {
-            $getType = 'all';
-        }
+        $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' ? 'all' : $getQuery;
         
         if ($getType === 'all') {
             return view('project')->withGetType($getType)

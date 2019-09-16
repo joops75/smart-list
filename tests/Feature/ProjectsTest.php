@@ -281,4 +281,70 @@ class ProjectsTest extends TestCase
         $this->assertDatabaseHas('tasks', $task3->toArray());
         $this->assertDatabaseMissing('tasks', $task4->toArray());
     }
+
+    /**  @test */
+    
+    public function a_user_can_fetch_only_the_projects_with_all_completed_tasks_or_some_incomplete_tasks_or_no_tasks()
+    {
+        $this->withoutExceptionHandling();
+        $user = $this->login();
+
+        $project1 = factory(Project::class)->create(['user_id' => $user->id]);
+        factory(Task::class)->create(['project_id' => $project1->id]);
+        factory(Task::class)->create(['project_id' => $project1->id]);
+
+        $project2 = factory(Project::class)->create(['user_id' => $user->id]);
+        factory(Task::class)->create(['project_id' => $project2->id]);
+        factory(Task::class)->create(['project_id' => $project2->id, 'completed' => true]);
+
+        $project3 = factory(Project::class)->create(['user_id' => $user->id]);
+        factory(Task::class)->create(['project_id' => $project3->id, 'completed' => true]);
+        factory(Task::class)->create(['project_id' => $project3->id, 'completed' => true]);
+
+        $project4 = factory(Project::class)->create(['user_id' => 99999]);
+        factory(Task::class)->create(['project_id' => $project4->id, 'completed' => true]);
+        factory(Task::class)->create(['project_id' => $project4->id]);
+
+        $project5 = factory(Project::class)->create(['user_id' => 99999]);
+        factory(Task::class)->create(['project_id' => $project5->id, 'completed' => true]);
+        factory(Task::class)->create(['project_id' => $project5->id, 'completed' => true]);
+
+        $project6 = factory(Project::class)->create(['user_id' => 99999]);
+        factory(Task::class)->create(['project_id' => $project6->id]);
+        factory(Task::class)->create(['project_id' => $project6->id]);
+
+        $project7 = factory(Project::class)->create(['user_id' => $user->id]);
+
+        $project8 = factory(Project::class)->create(['user_id' => 99999]);
+
+        $this->get("/project?get=completed")
+                ->assertDontSee($project1->title)
+                ->assertDontSee($project2->title)
+                ->assertSee($project3->title)
+                ->assertDontSee($project4->title)
+                ->assertDontSee($project5->title)
+                ->assertDontSee($project6->title)
+                ->assertDontSee($project7->title)
+                ->assertDontSee($project8->title);
+
+        $this->get("/project?get=incomplete")
+                ->assertSee($project1->title)
+                ->assertSee($project2->title)
+                ->assertDontSee($project3->title)
+                ->assertDontSee($project4->title)
+                ->assertDontSee($project5->title)
+                ->assertDontSee($project6->title)
+                ->assertDontSee($project7->title)
+                ->assertDontSee($project8->title);
+
+        $this->get("/project?get=empty")
+                ->assertDontSee($project1->title)
+                ->assertDontSee($project2->title)
+                ->assertDontSee($project3->title)
+                ->assertDontSee($project4->title)
+                ->assertDontSee($project5->title)
+                ->assertDontSee($project6->title)
+                ->assertSee($project7->title)
+                ->assertDontSee($project8->title);
+    }
 }
