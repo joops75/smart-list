@@ -274,7 +274,7 @@ class ProjectsTest extends TestCase
         $task3 = factory(Task::class)->create(['project_id' => $project->id]);
         $task4 = factory(Task::class)->create(['project_id' => $project->id, 'completed' => true]);
 
-        $this->delete("/project/$project->id?deleteOnlyCompletedTasks=true");
+        $this->delete("/task/0?deleteAllCompletedTasksOfAssociatedProject=true&projectId=$task1->project_id");
 
         $this->assertDatabaseHas('tasks', $task1->toArray());
         $this->assertDatabaseMissing('tasks', $task2->toArray());

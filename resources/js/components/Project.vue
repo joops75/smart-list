@@ -54,9 +54,10 @@ export default {
                 return;
             }
             
-            axios.delete(`/project/${this.project.id}`, {
+            axios.delete(`/task/0`, {
                 params: {
-                    deleteOnlyCompletedTasks: true
+                    deleteAllCompletedTasksOfAssociatedProject: true,
+                    projectId: this.project.id
                 }
             }).then(() => {
                 window.location.reload();
