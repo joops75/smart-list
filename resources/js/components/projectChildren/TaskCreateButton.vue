@@ -1,7 +1,7 @@
 <template>
     <div>
         <button type="button" class="btn btn-primary" @click="handleClick" data-toggle="modal" data-target="#createTaskModal">
-            Create New Task
+            Create Task
         </button>
     </div>
 </template>
