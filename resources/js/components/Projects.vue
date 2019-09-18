@@ -15,6 +15,10 @@
 
         <div v-if="projects.length">
             <projects-grid :projects="projects"></projects-grid>
+            <button type="button" class="btn btn-danger" :hidden="get_type !== 'completed'" @click="deleteProjects">Delete All Completed Projects</button>
+            <button type="button" class="btn btn-danger" :hidden="get_type !== 'incomplete'" @click="deleteProjects">Delete All Incomplete Projects</button>
+            <button type="button" class="btn btn-danger" :hidden="get_type !== 'empty'" @click="deleteProjects">Delete All Empty Projects</button>
+            <button type="button" class="btn btn-danger" :hidden="get_type !== 'all'" @click="deleteProjects">Delete All Projects</button>
         </div>
 
         <div v-else>
@@ -38,20 +42,32 @@ export default {
             return JSON.parse(this.projects_json);
         },
         noProjectsMessage() {
-            if (this.get_type === 'completed') {
-                return 'No completed projects.'
-            } else if (this.get_type === 'incomplete') {
-                return 'No incomplete projects.'
-            } else if (this.get_type === 'empty') {
-                return 'No empty projects.'
-            } else {
-                return 'No projects saved.'
+            switch (this.get_type) {
+                case 'completed':   return 'No completed projects.';
+                case 'incomplete':  return 'No incomplete projects.';
+                case 'empty':       return 'No empty projects.';
+                default:            return 'No projects saved.';
             }
         }
     },
     methods: {
         navigate(e) {
             window.location.assign(e.target.dataset.url);
+        },
+        deleteProjects() {
+            if (!confirm(`Are you sure you want to delete ${this.get_type} projects?`)) {
+                return;
+            }
+
+            axios.delete('/project/0', {
+                params: {
+                    get: this.get_type
+                }
+            }).then(() => {
+                window.location.reload();
+            }).catch(err => {
+                console.log(err);
+            });
         }
     }
 }

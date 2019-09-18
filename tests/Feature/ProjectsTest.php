@@ -347,4 +347,176 @@ class ProjectsTest extends TestCase
                 ->assertSee($project7->title)
                 ->assertDontSee($project8->title);
     }
+
+    /**  @test */
+    
+    public function a_user_can_simultaneously_delete_multiple_projects_with_varying_completeness_along_with_any_associated_tasks()
+    {
+        $this->withoutExceptionHandling();
+        $user = $this->login();
+
+        // delete all projects with all tasks completed
+
+        $project1 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task1 = factory(Task::class)->create(['project_id' => $project1->id, 'completed' => true]);
+        $task2 = factory(Task::class)->create(['project_id' => $project1->id, 'completed' => true]);
+
+        $project2 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task3 = factory(Task::class)->create(['project_id' => $project2->id, 'completed' => true]);
+        $task4 = factory(Task::class)->create(['project_id' => $project2->id, 'completed' => true]);
+
+        $project3 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task5 = factory(Task::class)->create(['project_id' => $project3->id, 'completed' => true]);
+        $task6 = factory(Task::class)->create(['project_id' => $project3->id]);
+
+        $project4 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task7 = factory(Task::class)->create(['project_id' => $project4->id, 'completed' => true]);
+        $task8 = factory(Task::class)->create(['project_id' => $project4->id]);
+
+        $project5 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task9 = factory(Task::class)->create(['project_id' => $project5->id]);
+        $task10 = factory(Task::class)->create(['project_id' => $project5->id]);
+
+        $project6 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task11 = factory(Task::class)->create(['project_id' => $project6->id]);
+        $task12 = factory(Task::class)->create(['project_id' => $project6->id]);
+
+        $project7 = factory(Project::class)->create(['user_id' => $user->id]);
+
+        $project8 = factory(Project::class)->create(['user_id' => $user->id]);
+
+        $this->delete('/project/0?get=completed')
+                ->assertStatus(200);
+
+        $this->assertDatabaseMissing('projects', $project1->toArray());
+        $this->assertDatabaseMissing('projects', $project2->toArray());
+        $this->assertDatabaseHas('projects', $project3->toArray());
+        $this->assertDatabaseHas('projects', $project4->toArray());
+        $this->assertDatabaseHas('projects', $project5->toArray());
+        $this->assertDatabaseHas('projects', $project6->toArray());
+        $this->assertDatabaseHas('projects', $project7->toArray());
+        $this->assertDatabaseHas('projects', $project8->toArray());
+        
+        $this->assertDatabaseMissing('tasks', $task1->toArray());
+        $this->assertDatabaseMissing('tasks', $task2->toArray());
+        $this->assertDatabaseMissing('tasks', $task3->toArray());
+        $this->assertDatabaseMissing('tasks', $task4->toArray());
+        $this->assertDatabaseHas('tasks', $task5->toArray());
+        $this->assertDatabaseHas('tasks', $task6->toArray());
+        $this->assertDatabaseHas('tasks', $task7->toArray());
+        $this->assertDatabaseHas('tasks', $task8->toArray());
+        $this->assertDatabaseHas('tasks', $task9->toArray());
+        $this->assertDatabaseHas('tasks', $task10->toArray());
+        $this->assertDatabaseHas('tasks', $task11->toArray());
+        $this->assertDatabaseHas('tasks', $task12->toArray());
+
+        // delete all incomplete projects
+
+        $project1 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task1 = factory(Task::class)->create(['project_id' => $project1->id, 'completed' => true]);
+        $task2 = factory(Task::class)->create(['project_id' => $project1->id, 'completed' => true]);
+
+        $project2 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task3 = factory(Task::class)->create(['project_id' => $project2->id, 'completed' => true]);
+        $task4 = factory(Task::class)->create(['project_id' => $project2->id, 'completed' => true]);
+
+        $this->delete('/project/0?get=incomplete')
+                ->assertStatus(200);
+
+        $this->assertDatabaseHas('projects', $project1->toArray());
+        $this->assertDatabaseHas('projects', $project2->toArray());
+        $this->assertDatabaseMissing('projects', $project3->toArray());
+        $this->assertDatabaseMissing('projects', $project4->toArray());
+        $this->assertDatabaseMissing('projects', $project5->toArray());
+        $this->assertDatabaseMissing('projects', $project6->toArray());
+        $this->assertDatabaseHas('projects', $project7->toArray());
+        $this->assertDatabaseHas('projects', $project8->toArray());
+        
+        $this->assertDatabaseHas('tasks', $task1->toArray());
+        $this->assertDatabaseHas('tasks', $task2->toArray());
+        $this->assertDatabaseHas('tasks', $task3->toArray());
+        $this->assertDatabaseHas('tasks', $task4->toArray());
+        $this->assertDatabaseMissing('tasks', $task5->toArray());
+        $this->assertDatabaseMissing('tasks', $task6->toArray());
+        $this->assertDatabaseMissing('tasks', $task7->toArray());
+        $this->assertDatabaseMissing('tasks', $task8->toArray());
+        $this->assertDatabaseMissing('tasks', $task9->toArray());
+        $this->assertDatabaseMissing('tasks', $task10->toArray());
+        $this->assertDatabaseMissing('tasks', $task11->toArray());
+        $this->assertDatabaseMissing('tasks', $task12->toArray());
+
+        // delete all empty projects
+
+        $project3 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task5 = factory(Task::class)->create(['project_id' => $project3->id, 'completed' => true]);
+        $task6 = factory(Task::class)->create(['project_id' => $project3->id]);
+
+        $project4 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task7 = factory(Task::class)->create(['project_id' => $project4->id, 'completed' => true]);
+        $task8 = factory(Task::class)->create(['project_id' => $project4->id]);
+
+        $project5 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task9 = factory(Task::class)->create(['project_id' => $project5->id]);
+        $task10 = factory(Task::class)->create(['project_id' => $project5->id]);
+
+        $project6 = factory(Project::class)->create(['user_id' => $user->id]);
+        $task11 = factory(Task::class)->create(['project_id' => $project6->id]);
+        $task12 = factory(Task::class)->create(['project_id' => $project6->id]);
+
+        $this->delete('/project/0?get=empty')
+                ->assertStatus(200);
+
+        $this->assertDatabaseHas('projects', $project1->toArray());
+        $this->assertDatabaseHas('projects', $project2->toArray());
+        $this->assertDatabaseHas('projects', $project3->toArray());
+        $this->assertDatabaseHas('projects', $project4->toArray());
+        $this->assertDatabaseHas('projects', $project5->toArray());
+        $this->assertDatabaseHas('projects', $project6->toArray());
+        $this->assertDatabaseMissing('projects', $project7->toArray());
+        $this->assertDatabaseMissing('projects', $project8->toArray());
+        
+        $this->assertDatabaseHas('tasks', $task1->toArray());
+        $this->assertDatabaseHas('tasks', $task2->toArray());
+        $this->assertDatabaseHas('tasks', $task3->toArray());
+        $this->assertDatabaseHas('tasks', $task4->toArray());
+        $this->assertDatabaseHas('tasks', $task5->toArray());
+        $this->assertDatabaseHas('tasks', $task6->toArray());
+        $this->assertDatabaseHas('tasks', $task7->toArray());
+        $this->assertDatabaseHas('tasks', $task8->toArray());
+        $this->assertDatabaseHas('tasks', $task9->toArray());
+        $this->assertDatabaseHas('tasks', $task10->toArray());
+        $this->assertDatabaseHas('tasks', $task11->toArray());
+        $this->assertDatabaseHas('tasks', $task12->toArray());
+
+        // delete all projects
+
+        $project7 = factory(Project::class)->create(['user_id' => $user->id]);
+
+        $project8 = factory(Project::class)->create(['user_id' => $user->id]);
+
+        $this->delete('/project/0?get=all')
+                ->assertStatus(200);
+
+        $this->assertDatabaseMissing('projects', $project1->toArray());
+        $this->assertDatabaseMissing('projects', $project2->toArray());
+        $this->assertDatabaseMissing('projects', $project3->toArray());
+        $this->assertDatabaseMissing('projects', $project4->toArray());
+        $this->assertDatabaseMissing('projects', $project5->toArray());
+        $this->assertDatabaseMissing('projects', $project6->toArray());
+        $this->assertDatabaseMissing('projects', $project7->toArray());
+        $this->assertDatabaseMissing('projects', $project8->toArray());
+        
+        $this->assertDatabaseMissing('tasks', $task1->toArray());
+        $this->assertDatabaseMissing('tasks', $task2->toArray());
+        $this->assertDatabaseMissing('tasks', $task3->toArray());
+        $this->assertDatabaseMissing('tasks', $task4->toArray());
+        $this->assertDatabaseMissing('tasks', $task5->toArray());
+        $this->assertDatabaseMissing('tasks', $task6->toArray());
+        $this->assertDatabaseMissing('tasks', $task7->toArray());
+        $this->assertDatabaseMissing('tasks', $task8->toArray());
+        $this->assertDatabaseMissing('tasks', $task9->toArray());
+        $this->assertDatabaseMissing('tasks', $task10->toArray());
+        $this->assertDatabaseMissing('tasks', $task11->toArray());
+        $this->assertDatabaseMissing('tasks', $task12->toArray());
+    }
 }

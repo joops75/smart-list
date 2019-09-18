@@ -17,7 +17,7 @@ class ProjectController extends Controller
         $getQuery = $request->query('get');
         $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' && $getQuery !== 'empty' ? 'all' : $getQuery;
         
-        $projects = $this->getProjects($getType);
+        $projects = $this->getProjectsQuery($getType)->get();
         
         return view('projects')->withProjects($projects)->withGetType($getType);
     }
@@ -113,9 +113,17 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        Project::destroy($id);
+        $getQuery = $request->query('get');
+        $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' && $getQuery !== 'empty' && $getQuery !== 'all' ? 'single' : $getQuery;
+
+        if ($getType === 'single') {
+            Project::destroy($id);
+        } else {
+            $projectIds = $this->getProjectsQuery($getType)->pluck('id');
+            Project::destroy($projectIds);
+        }
 
         return response()->json('ok', 200);
     }
