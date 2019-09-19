@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Events\ProjectDeleted;
 
 class Project extends Model
 {
@@ -21,13 +20,4 @@ class Project extends Model
     public function tasks() {
         return $this->hasMany('App\Task');
     }
-
-    /**
-     * The event map for the model.
-     *
-     * @var array
-     */
-    protected $dispatchesEvents = [
-        'deleted' => ProjectDeleted::class,
-    ];
 }

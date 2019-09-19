@@ -92,7 +92,8 @@ class TaskController extends Controller
     {
         if ($request->query('deleteAllCompletedTasksOfAssociatedProject')) {
             $projectId = $request->query('projectId');
-            Task::where('project_id', $projectId)->where('completed', true)->delete();
+            $ids = Task::where('project_id', $projectId)->where('completed', true)->pluck('id');
+            Task::destroy($ids);
         } else {
             Task::destroy($id);
         }
