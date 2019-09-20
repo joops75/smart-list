@@ -4,10 +4,12 @@ namespace App\Observers;
 
 use App\Project;
 use App\Task;
-use App\Event;
+use App\Observers\helpers\EventModelMethods;
 
 class ProjectObserver
 {
+    use EventModelMethods;
+    
     /**
      * Handle the project "created" event.
      *
@@ -16,12 +18,7 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        Event::create([
-            'model' => 'Project',
-            'model_id' => $project->id,
-            'type' => 'created',
-            'name' => $project->title
-        ]);
+        $this->createEvent('Project', $project->id, 'created', $project->title);
     }
 
     /**
@@ -32,12 +29,7 @@ class ProjectObserver
      */
     public function updated(Project $project)
     {
-        Event::create([
-            'model' => 'Project',
-            'model_id' => $project->id,
-            'type' => 'updated',
-            'name' => $project->title
-        ]);
+        $this->createEvent('Project', $project->id, 'updated', $project->title);
     }
 
     /**
@@ -51,12 +43,7 @@ class ProjectObserver
         $taskIds = $project->tasks()->pluck('id');
         Task::destroy($taskIds);
 
-        Event::create([
-            'model' => 'Project',
-            'model_id' => $project->id,
-            'type' => 'deleted',
-            'name' => $project->title
-        ]);
+        $this->createEvent('Project', $project->id, 'deleted', $project->title);
     }
 
     /**

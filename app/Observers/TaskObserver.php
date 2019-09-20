@@ -3,10 +3,12 @@
 namespace App\Observers;
 
 use App\Task;
-use App\Event;
+use App\Observers\helpers\EventModelMethods;
 
 class TaskObserver
 {
+    use EventModelMethods;
+    
     /**
      * Handle the task "created" event.
      *
@@ -15,12 +17,7 @@ class TaskObserver
      */
     public function created(Task $task)
     {
-        Event::create([
-            'model' => 'Task',
-            'model_id' => $task->id,
-            'type' => 'created',
-            'name' => $task->name
-        ]);
+        $this->createEvent('Task', $task->id, 'created', $task->name);
     }
 
     /**
@@ -31,12 +28,7 @@ class TaskObserver
      */
     public function updated(Task $task)
     {
-        Event::create([
-            'model' => 'Task',
-            'model_id' => $task->id,
-            'type' => 'updated',
-            'name' => $task->name
-        ]);
+        $this->createEvent('Task', $task->id, 'updated', $task->name);
     }
 
     /**
@@ -47,12 +39,7 @@ class TaskObserver
      */
     public function deleted(Task $task)
     {
-        Event::create([
-            'model' => 'Task',
-            'model_id' => $task->id,
-            'type' => 'deleted',
-            'name' => $task->name
-        ]);
+        $this->createEvent('Task', $task->id, 'deleted', $task->name);
     }
 
     /**
