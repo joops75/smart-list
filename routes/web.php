@@ -24,3 +24,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('task', 'TaskController')->only([
     'store', 'update', 'destroy'
 ])->middleware('auth');
+
+Route::get('event', 'EventController@getEvents');

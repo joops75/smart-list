@@ -55,4 +55,16 @@ class Controller extends BaseController
 
         return $projectsQuery;
     }
+
+    public function getEventsQuery($getType, $projectId) {
+        $eventsQuery;
+        if ($getType === 'tasks') {
+            $first = auth()->user()->events()->where('model', 'Task');
+            $eventsQuery = auth()->user()->events()->where('project_id', $projectId)->union($first)->latest();
+        } else {
+            $eventsQuery = auth()->user()->events()->latest();
+        }
+
+        return $eventsQuery;
+    }
 }

@@ -200,4 +200,82 @@ class EventsTest extends TestCase
             'name' => $projectTask2['name']
         ]);
     }
+
+    /** @test */
+
+    public function the_latest_10_events_for_a_user_can_be_retrieved_from_the_database() {
+        $this->withoutExceptionHandling();
+        
+        $user = $this->login();
+
+        $projects = factory(Project::class, 5)->create(['user_id' => $user->id]);
+        $tasks = factory(Task::class, 6)->create(['project_id' => 1]);
+
+        $this->get('/event')
+                ->assertStatus(200)
+                ->assertJsonCount(10, 0); // 10 items at key '0'
+    }
+
+    /** @test */
+
+    public function any_block_of_10_events_for_a_user_can_be_retrieved_from_the_database() {
+        $this->withoutExceptionHandling();
+        
+        $user = $this->login();
+
+        factory(Project::class, 5)->create(['user_id' => $user->id]);
+        factory(Task::class, 6)->create(['project_id' => 1]);
+
+        $this->get('/event?skip=10')
+                ->assertStatus(200)
+                ->assertJsonCount(1, 0);
+                
+        factory(Task::class, 10)->create(['project_id' => 1]);
+
+        $this->get('/event?skip=10')
+                ->assertStatus(200)
+                ->assertJsonCount(10, 0);
+    }
+
+    /** @test */
+
+    public function the_latest_10_task_events_for_a_project_can_be_retrieved_from_the_database() {
+        $this->withoutExceptionHandling();
+        
+        $user = $this->login();
+
+        factory(Project::class, 5)->create(['user_id' => $user->id]);
+        factory(Task::class, 6)->create(['project_id' => 1]);
+
+        $this->get('/event?get=tasks&projectId=1')
+                ->assertStatus(200)
+                ->assertJsonCount(6, 0); // 6 items at key '0'
+
+        factory(Task::class, 5)->create(['project_id' => 1]);
+
+        $this->get('/event?get=tasks&projectId=1')
+                ->assertStatus(200)
+                ->assertJsonCount(10, 0); // 10 items at key '0'
+    }
+
+    /** @test */
+
+    public function any_block_of_10_task_events_for_a_project_can_be_retrieved_from_the_database() {
+        $this->withoutExceptionHandling();
+        
+        $user = $this->login();
+
+        factory(Project::class, 5)->create(['user_id' => $user->id]);
+        factory(Task::class, 15)->create(['project_id' => 1]);
+
+        $this->get('/event?get=tasks&projectId=1&skip=10')
+                ->assertStatus(200)
+                ->assertJsonCount(5, 0);
+                
+        factory(Task::class, 6)->create(['project_id' => 1]);
+
+        $this->get('/event?get=tasks&projectId=1&skip=10')
+                ->assertStatus(200)
+                ->assertJsonCount(10, 0);
+    }
 }
