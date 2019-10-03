@@ -17,7 +17,7 @@ class TaskObserver
      */
     public function created(Task $task)
     {
-        $this->createEvent('Task', $task->id, 'created', $task->name);
+        $this->createEvent($task->project_id, $task->id, 'created', $task->name);
     }
 
     /**
@@ -28,7 +28,7 @@ class TaskObserver
      */
     public function updated(Task $task)
     {
-        $this->createEvent('Task', $task->id, 'updated', $task->name);
+        $this->createEvent($task->project_id, $task->id, 'updated', $task->name);
     }
 
     /**
@@ -39,7 +39,7 @@ class TaskObserver
      */
     public function deleted(Task $task)
     {
-        $this->createEvent('Task', $task->id, 'deleted', $task->name);
+        $this->createEvent($task->project_id, $task->id, 'deleted', $task->name);
     }
 
     /**

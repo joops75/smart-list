@@ -58,43 +58,43 @@ class EventsTest extends TestCase
                 ->assertStatus(200);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Project',
-            'model_id' => 1,
+            'project_id' => 1,
+            'task_id' => null,
             'type' => 'created',
             'name' => $project['title']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Project',
-            'model_id' => 1,
+            'project_id' => 1,
+            'task_id' => null,
             'type' => 'updated',
             'name' => $editedProject['title']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => 1,
+            'project_id' => 1,
+            'task_id' => 1,
             'type' => 'created',
             'name' => $task['name']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => 1,
+            'project_id' => 1,
+            'task_id' => 1,
             'type' => 'updated',
             'name' => $editedTask['name']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => 1,
+            'project_id' => 1,
+            'task_id' => 1,
             'type' => 'deleted',
             'name' => $editedTask['name']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Project',
-            'model_id' => 1,
+            'project_id' => 1,
+            'task_id' => null,
             'type' => 'deleted',
             'name' => $editedProject['title']
         ]);
@@ -104,8 +104,6 @@ class EventsTest extends TestCase
 
     public function multiple_project_and_task_events_are_recorded_when_projects_are_deleted_en_masse()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->login();
 
         $projects = factory(Project::class, 2)->create(['user_id' => $user->id]);
@@ -124,43 +122,43 @@ class EventsTest extends TestCase
                 ->assertStatus(200);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Project',
-            'model_id' => $project1['id'],
+            'project_id' => $project1['id'],
+            'task_id' => null,
             'type' => 'deleted',
             'name' => $project1['title']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Project',
-            'model_id' => $project2['id'],
+            'project_id' => $project2['id'],
+            'task_id' => null,
             'type' => 'deleted',
             'name' => $project2['title']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => $project1Task1['id'],
+            'project_id' => $project1['id'],
+            'task_id' => $project1Task1['id'],
             'type' => 'deleted',
             'name' => $project1Task1['name']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => $project1Task2['id'],
+            'project_id' => $project1['id'],
+            'task_id' => $project1Task2['id'],
             'type' => 'deleted',
             'name' => $project1Task2['name']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => $project2Task1['id'],
+            'project_id' => $project2['id'],
+            'task_id' => $project2Task1['id'],
             'type' => 'deleted',
             'name' => $project2Task1['name']
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => $project2Task2['id'],
+            'project_id' => $project2['id'],
+            'task_id' => $project2Task2['id'],
             'type' => 'deleted',
             'name' => $project2Task2['name']
         ]);
@@ -187,15 +185,15 @@ class EventsTest extends TestCase
                 ->assertStatus(200);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => $projectTask1->id,
+            'project_id' => $project->id,
+            'task_id' => $projectTask1->id,
             'type' => 'deleted',
             'name' => $projectTask1->name
         ]);
         
         $this->assertDatabaseHas('events', [
-            'model' => 'Task',
-            'model_id' => $projectTask2['id'],
+            'project_id' => $project->id,
+            'task_id' => $projectTask2->id,
             'type' => 'deleted',
             'name' => $projectTask2['name']
         ]);
@@ -277,5 +275,23 @@ class EventsTest extends TestCase
         $this->get('/event?get=tasks&projectId=1&skip=10')
                 ->assertStatus(200)
                 ->assertJsonCount(10, 0);
+    }
+
+    /** @test */
+
+    public function events_for_a_deleted_task_are_still_displayed() {
+        $this->withoutExceptionHandling();
+        
+        $user = $this->login();
+
+        factory(Project::class, 3)->create(['user_id' => $user->id]);
+        factory(Task::class, 3)->create(['project_id' => 1]);
+
+        $this->delete('/task/1')
+                ->assertStatus(200);
+
+        $this->get('/event?get=tasks&projectId=1')
+                ->assertStatus(200)
+                ->assertJsonCount(4, 0);
     }
 }

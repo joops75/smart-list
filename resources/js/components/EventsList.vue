@@ -21,7 +21,6 @@ export default {
         const url = this.type === 'projects' ? '/event' : `/event?get=tasks&projectId=${this.projectId}`;
         axios.get(url)
             .then(({ data }) => {
-                console.log(data); // returns less data than expected after deleting tasks
                 this.events = data;
             })
             .catch(err => {

@@ -18,7 +18,7 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        $this->createEvent('Project', $project->id, 'created', $project->title);
+        $this->createEvent($project->id, null, 'created', $project->title);
     }
 
     /**
@@ -29,7 +29,7 @@ class ProjectObserver
      */
     public function updated(Project $project)
     {
-        $this->createEvent('Project', $project->id, 'updated', $project->title);
+        $this->createEvent($project->id, null, 'updated', $project->title);
     }
 
     /**
@@ -43,7 +43,7 @@ class ProjectObserver
         $taskIds = $project->tasks()->pluck('id');
         Task::destroy($taskIds);
 
-        $this->createEvent('Project', $project->id, 'deleted', $project->title);
+        $this->createEvent($project->id, null, 'deleted', $project->title);
     }
 
     /**
