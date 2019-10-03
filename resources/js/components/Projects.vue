@@ -1,28 +1,36 @@
 <template>
     <div>
-        <h2>My Projects</h2>
+        <div class="row">
+            <div class="col-9">
+                <h2>My Projects</h2>
 
-        <project-modal></project-modal>
+                <project-modal></project-modal>
 
-        <project-create-button></project-create-button>
+                <project-create-button></project-create-button>
 
-        <div>
-            <button type="button" class="btn btn-secondary" :data-url="`/project`" @click="navigate" :disabled="get_type === 'all'">View All Projects</button>
-            <button type="button" class="btn btn-secondary" :data-url="`/project?get=incomplete`" @click="navigate" :disabled="get_type === 'incomplete'">View Incomplete Projects</button>
-            <button type="button" class="btn btn-secondary" :data-url="`/project?get=completed`" @click="navigate" :disabled="get_type === 'completed'">View Completed Projects</button>
-            <button type="button" class="btn btn-secondary" :data-url="`/project?get=empty`" @click="navigate" :disabled="get_type === 'empty'">View Empty Projects</button>
-        </div>
+                <div>
+                    <button type="button" class="btn btn-secondary" :data-url="`/project`" @click="navigate" :disabled="get_type === 'all'">View All Projects</button>
+                    <button type="button" class="btn btn-secondary" :data-url="`/project?get=incomplete`" @click="navigate" :disabled="get_type === 'incomplete'">View Incomplete Projects</button>
+                    <button type="button" class="btn btn-secondary" :data-url="`/project?get=completed`" @click="navigate" :disabled="get_type === 'completed'">View Completed Projects</button>
+                    <button type="button" class="btn btn-secondary" :data-url="`/project?get=empty`" @click="navigate" :disabled="get_type === 'empty'">View Empty Projects</button>
+                </div>
 
-        <div v-if="projects.length">
-            <projects-grid :projects="projects"></projects-grid>
-            <button type="button" class="btn btn-danger" :hidden="get_type !== 'completed'" @click="deleteProjects">Delete All Completed Projects</button>
-            <button type="button" class="btn btn-danger" :hidden="get_type !== 'incomplete'" @click="deleteProjects">Delete All Incomplete Projects</button>
-            <button type="button" class="btn btn-danger" :hidden="get_type !== 'empty'" @click="deleteProjects">Delete All Empty Projects</button>
-            <button type="button" class="btn btn-danger" :hidden="get_type !== 'all'" @click="deleteProjects">Delete All Projects</button>
-        </div>
-
-        <div v-else>
-            {{ noProjectsMessage }}
+                <div v-if="projects.length">
+                    <projects-grid :projects="projects"></projects-grid>
+                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'completed'" @click="deleteProjects">Delete All Completed Projects</button>
+                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'incomplete'" @click="deleteProjects">Delete All Incomplete Projects</button>
+                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'empty'" @click="deleteProjects">Delete All Empty Projects</button>
+                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'all'" @click="deleteProjects">Delete All Projects</button>
+                </div>
+                
+                <div v-else>
+                    {{ noProjectsMessage }}
+                </div>
+            </div>
+            
+            <div class="col-3">
+                <events-list type="projects"></events-list>
+            </div>
         </div>
     </div>
 </template>
@@ -35,7 +43,8 @@ export default {
     components: {
         'project-create-button': require('./projectsChildren/ProjectCreateButton.vue').default,
         'projects-grid': require('./projectsChildren/ProjectsGrid.vue').default,
-        'project-modal': require('./projectsChildren/ProjectCreateEditModal.vue').default
+        'project-modal': require('./projectsChildren/ProjectCreateEditModal.vue').default,
+        'events-list': require('./EventsList.vue').default
     },
     computed: {
         projects() {
