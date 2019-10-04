@@ -22,6 +22,8 @@
                 <div v-else>
                     No tasks saved.
                 </div>
+                
+                <a href="/project">Back to My Projects page</a>
             </div>
             
             <div class="col-3">

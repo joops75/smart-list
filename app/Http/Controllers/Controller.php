@@ -59,9 +59,9 @@ class Controller extends BaseController
     public function getEventsQuery($getType, $projectId) {
         $eventsQuery;
         if ($getType === 'tasks') {
-            $eventsQuery = auth()->user()->events()->where('project_id', $projectId)->whereNotNull('task_id')->latest();
+            $eventsQuery = auth()->user()->events()->where('project_id', $projectId)->whereNotNull('task_id');
         } else {
-            $eventsQuery = auth()->user()->events()->latest();
+            $eventsQuery = auth()->user()->events();
         }
 
         return $eventsQuery;

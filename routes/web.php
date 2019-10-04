@@ -26,3 +26,5 @@ Route::resource('task', 'TaskController')->only([
 ])->middleware('auth');
 
 Route::get('event', 'EventController@getEvents');
+
+Route::delete('event', 'EventController@deleteEvents');

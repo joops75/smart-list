@@ -294,4 +294,137 @@ class EventsTest extends TestCase
                 ->assertStatus(200)
                 ->assertJsonCount(4, 0);
     }
+
+    /** @test */
+
+    public function a_user_can_delete_all_their_events() {
+        $this->withoutExceptionHandling();
+
+        $user1 = $this->login();
+
+        $project1 = factory(Project::class)->create(['user_id' => $user1->id]);
+        $task1 = factory(Task::class)->create(['project_id' => $project1->id]);
+
+        $user2 = $this->login();
+
+        $project2 = factory(Project::class)->create(['user_id' => $user2->id]);
+        $task2 = factory(Task::class)->create(['project_id' => $project2->id]);
+
+        $project1event = [
+            'user_id' => $user1->id,
+            'project_id' => $project1->id,
+            'task_id' => null,
+            'type' => 'created',
+            'name' => $project1->title
+        ];
+
+        $task1event = [
+            'user_id' => $user1->id,
+            'project_id' => $project1->id,
+            'task_id' => $task1->id,
+            'type' => 'created',
+            'name' => $task1->name
+        ];
+
+        $project2event = [
+            'user_id' => $user2->id,
+            'project_id' => $project2->id,
+            'task_id' => null,
+            'type' => 'created',
+            'name' => $project2->title
+        ];
+
+        $task2event = [
+            'user_id' => $user2->id,
+            'project_id' => $project2->id,
+            'task_id' => $task2->id,
+            'type' => 'created',
+            'name' => $task2->name
+        ];
+
+        $this->assertDatabaseHas('events', $project1event);
+        $this->assertDatabaseHas('events', $task1event);
+        $this->assertDatabaseHas('events', $project2event);
+        $this->assertDatabaseHas('events', $task2event);
+
+        $this->delete('/event')
+                ->assertStatus(200);
+
+        $this->assertDatabaseHas('events', $project1event);
+        $this->assertDatabaseHas('events', $task1event);
+        $this->assertDatabaseMissing('events', $project2event);
+        $this->assertDatabaseMissing('events', $task2event);
+    }
+
+    /** @test */
+
+    public function a_user_can_delete_just_their_task_events_of_one_project() {
+        $this->withoutExceptionHandling();
+
+        $user1 = $this->login();
+
+        $project1 = factory(Project::class)->create(['user_id' => $user1->id]);
+        $task1 = factory(Task::class)->create(['project_id' => $project1->id]);
+
+        $user2 = $this->login();
+
+        $project2 = factory(Project::class)->create(['user_id' => $user2->id]);
+        $task2 = factory(Task::class)->create(['project_id' => $project2->id]);
+        $task3 = factory(Task::class)->create(['project_id' => $project2->id]);
+
+        $project1event = [
+            'user_id' => $user1->id,
+            'project_id' => $project1->id,
+            'task_id' => null,
+            'type' => 'created',
+            'name' => $project1->title
+        ];
+
+        $task1event = [
+            'user_id' => $user1->id,
+            'project_id' => $project1->id,
+            'task_id' => $task1->id,
+            'type' => 'created',
+            'name' => $task1->name
+        ];
+
+        $project2event = [
+            'user_id' => $user2->id,
+            'project_id' => $project2->id,
+            'task_id' => null,
+            'type' => 'created',
+            'name' => $project2->title
+        ];
+
+        $task2event = [
+            'user_id' => $user2->id,
+            'project_id' => $project2->id,
+            'task_id' => $task2->id,
+            'type' => 'created',
+            'name' => $task2->name
+        ];
+
+        $task3event = [
+            'user_id' => $user2->id,
+            'project_id' => $project2->id,
+            'task_id' => $task3->id,
+            'type' => 'created',
+            'name' => $task3->name
+        ];
+
+        $this->assertDatabaseHas('events', $project1event);
+        $this->assertDatabaseHas('events', $task1event);
+        $this->assertDatabaseHas('events', $project2event);
+        $this->assertDatabaseHas('events', $task2event);
+        $this->assertDatabaseHas('events', $task3event);
+
+        $this->delete("/event?delete=tasks&projectId=$project2->id")
+                ->assertStatus(200);
+
+        $this->assertDatabaseHas('events', $project1event);
+        $this->assertDatabaseHas('events', $task1event);
+        $this->assertDatabaseHas('events', $project2event);
+        $this->assertDatabaseMissing('events', $task2event);
+        $this->assertDatabaseMissing('events', $task3event);
+    }
 }

@@ -6,7 +6,10 @@
             {{ event.model }} "{{ event.name }}" {{ event.type }} at {{ formattedDate(event.created_at) }}
         </div>
         <button class="btn btn-secondary" @click="getMoreEvents" :disabled="eventsListFull">
-            {{ eventsListFull ? 'All updates shown' : 'Show more...' }}
+            {{ !events.length ? 'No updates to show' : eventsListFull ? 'All updates shown' : 'Show more...' }}
+        </button>
+        <button class="btn btn-danger" @click="deleteEvents" :hidden="!events.length">
+            {{ getDeleteEventsMessage() }}
         </button>
     </div>
 </template>
@@ -53,6 +56,23 @@ export default {
                 .catch(err => {
                     console.log(err);
                 });
+        },
+        deleteEvents() {
+            if (!confirm(`Are you sure you want to ${this.getDeleteEventsMessage().toLowerCase()}?`)) {
+                return;
+            }
+
+            const url = this.type === 'projects' ? '/event' : `/event?delete=tasks&projectId=${this.projectId}`;
+            axios.delete(url)
+                .then(() => {
+                    this.events = [];
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        },
+        getDeleteEventsMessage() {
+            return this.type === 'projects' ? 'Delete all updates' : 'Delete all task updates';
         }
     },
     computed: {
