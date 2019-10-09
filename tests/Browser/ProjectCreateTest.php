@@ -20,20 +20,21 @@ class ProjectCreateTest extends DuskTestCase
     {
         $user = factory(User::class)->create();
 
-        $project1 = factory(Project::class)->create([ 'user_id' => $user->id ]);
-        $project2 = factory(Project::class)->create([ 'user_id' => $user->id ]);
-        $project3 = factory(Project::class)->create([ 'user_id' => 999999 ]);
-
-        $this->browse(function ($browser) use ($user, $project1, $project2, $project3) {
+        $this->browse(function ($browser) use ($user) {
             $browser->visit('/login')
                     ->type('email', $user->email)
                     ->type('password', 'password')
                     ->press('Login')
                     ->assertPathIs('/home')
                     ->visit('/project')
-                    ->assertSee($project1->title)
-                    ->assertSee($project2->title)
-                    ->assertDontSee($project3->title);
+                    ->press('Create Project')
+                    ->whenAvailable('#createProjectModal', function ($modal) {
+                        $modal->type('#projectTitle', 'An awesome project')
+                                ->type('#projectDescription', 'Some info here')
+                                ->press('Create Project');
+                    })
+                    ->waitForReload()
+                    ->assertSee('An awesome project');
         });
     }
 }

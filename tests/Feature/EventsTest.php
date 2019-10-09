@@ -16,24 +16,23 @@ class EventsTest extends TestCase
 
     public function an_event_is_recorded_when_a_project_or_task_is_created_edited_or_deleted()
     {
-        $this->withoutExceptionHandling();
-
-        $this->login();
+        $user = $this->login();
 
         $project = [
-            'user_id' => 1,
             'title' => 'A new project',
             'description' => 'Some description'
         ];
 
-        $this->post('/project', $project);
+        $this->post('/project', $project)
+                ->assertStatus(200);
 
         $editedProject = [
             'title' => 'An edited project title',
             'description' => 'Some edited description'
         ];
 
-        $this->put('/project/1', $editedProject);
+        $this->put('/project/1', $editedProject)
+                ->assertStatus(200);
 
         $task = [
             'project_id' => 1,
@@ -41,7 +40,8 @@ class EventsTest extends TestCase
             'due_by' => now()->addMinutes(5)
         ];
 
-        $this->post('/task', $task);
+        $this->post('/task', $task)
+                ->assertStatus(200);
 
         $editedTask = [
             'name' => 'An edited task name',
@@ -49,7 +49,8 @@ class EventsTest extends TestCase
             'due_by' => now()->addMinutes(15)
         ];
 
-        $this->put('/task/1', $editedTask);
+        $this->put('/task/1', $editedTask)
+                ->assertStatus(200);
 
         $this->delete('/task/1')
                 ->assertStatus(200);
@@ -168,8 +169,6 @@ class EventsTest extends TestCase
 
     public function multiple_task_events_are_recorded_when_completed_tasks_are_deleted_en_masse()
     {
-        $this->withoutExceptionHandling();
-
         $user = $this->login();
 
         $project = factory(Project::class)->create(['user_id' => $user->id]);
@@ -202,8 +201,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function the_latest_10_events_for_a_user_can_be_retrieved_from_the_database() {
-        $this->withoutExceptionHandling();
-        
         $user = $this->login();
 
         $projects = factory(Project::class, 5)->create(['user_id' => $user->id]);
@@ -217,8 +214,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function any_block_of_10_events_for_a_user_can_be_retrieved_from_the_database() {
-        $this->withoutExceptionHandling();
-        
         $user = $this->login();
 
         factory(Project::class, 5)->create(['user_id' => $user->id]);
@@ -238,8 +233,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function the_latest_10_task_events_for_a_project_can_be_retrieved_from_the_database() {
-        $this->withoutExceptionHandling();
-        
         $user = $this->login();
 
         factory(Project::class, 5)->create(['user_id' => $user->id]);
@@ -259,8 +252,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function any_block_of_10_task_events_for_a_project_can_be_retrieved_from_the_database() {
-        $this->withoutExceptionHandling();
-        
         $user = $this->login();
 
         factory(Project::class, 5)->create(['user_id' => $user->id]);
@@ -280,8 +271,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function events_for_a_deleted_task_are_still_displayed() {
-        $this->withoutExceptionHandling();
-        
         $user = $this->login();
 
         factory(Project::class, 3)->create(['user_id' => $user->id]);
@@ -298,8 +287,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function a_user_can_delete_all_their_events() {
-        $this->withoutExceptionHandling();
-
         $user1 = $this->login();
 
         $project1 = factory(Project::class)->create(['user_id' => $user1->id]);
@@ -359,8 +346,6 @@ class EventsTest extends TestCase
     /** @test */
 
     public function a_user_can_delete_just_their_task_events_of_one_project() {
-        $this->withoutExceptionHandling();
-
         $user1 = $this->login();
 
         $project1 = factory(Project::class)->create(['user_id' => $user1->id]);

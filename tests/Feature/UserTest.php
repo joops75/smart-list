@@ -31,20 +31,18 @@ class UserTest extends TestCase
 
     public function a_user_can_have_associated_events()
     {
-        $this->withoutExceptionHandling();
-
         $user1 = $this->login();
         $project1 = factory(Project::class)->create(['user_id' => $user1->id]);
         $task1 = factory(Task::class)->create(['project_id' => $project1->id]);
         $this->put("/project/$project1->id", [
             'title' => 'A new title',
             'description' => 'Some edited description'
-        ]);
+        ])->assertStatus(200);
         $this->put("/task/$task1->id", [
             'name' => 'A new name',
             'due_by' => now()->addMinutes(15)
-        ]);
-        $this->delete("/project/$project1->id");
+        ])->assertStatus(200);
+        $this->delete("/project/$project1->id")->assertStatus(200);
 
         $this->assertCount(6, $user1->events()->get());
         $this->assertArraySubset(
@@ -80,12 +78,12 @@ class UserTest extends TestCase
         $this->put("/project/$project2->id", [
             'title' => 'A new title',
             'description' => 'Some edited description'
-        ]);
+        ])->assertStatus(200);
         $this->put("/task/$task2->id", [
             'name' => 'A new name',
             'due_by' => now()->addMinutes(15)
-        ]);
-        $this->delete("/project/$project2->id");
+        ])->assertStatus(200);
+        $this->delete("/project/$project2->id")->assertStatus(200);
 
         $this->assertCount(6, $user2->events()->get());
         $this->assertArraySubset(

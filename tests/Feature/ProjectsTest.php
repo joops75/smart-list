@@ -175,7 +175,6 @@ class ProjectsTest extends TestCase
     
     public function a_project_and_tasks_are_sent_to_the_show_page_when_viewing_a_single_project()
     {
-        $this->withoutExceptionHandling();
         $user = $this->login();
 
         $project1 = factory(Project::class)->create([
@@ -187,14 +186,16 @@ class ProjectsTest extends TestCase
             'name' => 'A New Task',
             'due_by' => now()->addMinutes(5)
         ];
-        $this->post('/task', $task1);
+        $this->post('/task', $task1)
+                ->assertStatus(200);
         
         $task2 = [
             'project_id' => 99999,
             'name' => 'Another Task',
             'due_by' => now()->addMinutes(15)
         ];
-        $this->post('/task', $task2);
+        $this->post('/task', $task2)
+                ->assertStatus(403);
 
         $this->get('/project/' . $project1->id)
             ->assertStatus(200)
@@ -286,7 +287,6 @@ class ProjectsTest extends TestCase
     
     public function a_user_can_fetch_only_the_projects_with_all_completed_tasks_or_some_incomplete_tasks_or_no_tasks()
     {
-        $this->withoutExceptionHandling();
         $user = $this->login();
 
         $project1 = factory(Project::class)->create(['user_id' => $user->id]);
@@ -352,7 +352,6 @@ class ProjectsTest extends TestCase
     
     public function a_user_can_simultaneously_delete_multiple_projects_with_varying_completeness_along_with_any_associated_tasks()
     {
-        $this->withoutExceptionHandling();
         $user = $this->login();
 
         // delete all projects with all tasks completed
@@ -518,5 +517,36 @@ class ProjectsTest extends TestCase
         $this->assertDatabaseMissing('tasks', $task10->toArray());
         $this->assertDatabaseMissing('tasks', $task11->toArray());
         $this->assertDatabaseMissing('tasks', $task12->toArray());
+    }
+
+    /** @test */
+
+    public function a_user_cannot_access_another_users_project_http_routes() {
+        $user1 = factory(User::class)->create();
+        $user2 = $this->login();
+
+        $project1 = factory(Project::class)->create(['user_id' => $user1->id]);
+
+        // index route
+        $this->get('/project')
+                ->assertStatus(200)
+                ->assertDontSee($project1->title);
+
+        // show route
+        $this->get("/project/$project1->id")
+                ->assertStatus(403);
+
+        // update route
+        $editedProject = [
+            'title' => 'An Edited Title',
+            'description' => 'An Edited Description'
+        ];
+
+        $this->put("/project/$project1->id", $editedProject)
+                ->assertStatus(403);
+
+        // destroy route
+        $this->delete("/project/$project1->id")
+                ->assertStatus(403);
     }
 }

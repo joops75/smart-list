@@ -17,7 +17,7 @@ class ProjectController extends Controller
         $getQuery = $request->query('get');
         $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' && $getQuery !== 'empty' ? 'all' : $getQuery;
         
-        $projects = $this->getProjectsQuery($getType)->get();
+        $projects = $this->getProjectsQuery($getType)->orderBy('id', 'desc')->get();
         
         return view('projects')->withProjects($projects)->withGetType($getType);
     }
@@ -58,6 +58,8 @@ class ProjectController extends Controller
      */
     public function show(Request $request, Project $project)
     {
+        $this->authorize('interact', $project); // triggers the 'interact' method at app\Policies\ProjectPolicy.php
+        
         $getQuery = $request->query('get');
         $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' ? 'all' : $getQuery;
         
@@ -97,6 +99,8 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
+        $this->authorize('interact', $project);
+        
         $this->validate($request, [
             'title' => 'required',
             'description' => 'required'
@@ -119,6 +123,7 @@ class ProjectController extends Controller
         $getType = $getQuery !== 'completed' && $getQuery !== 'incomplete' && $getQuery !== 'empty' && $getQuery !== 'all' ? 'single' : $getQuery;
 
         if ($getType === 'single') {
+            $this->authorize('interact', Project::find($id));
             Project::destroy($id);
         } else {
             $projectIds = $this->getProjectsQuery($getType)->pluck('id');
