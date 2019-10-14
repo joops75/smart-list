@@ -1,32 +1,51 @@
 <template>
     <div>
+
+        <task-modal></task-modal>
+
         <div class="row">
-            <div class="col-9">
-                <h2>{{ project.title }}</h2>
+            <div class="col-sm-9">
+                <div class="card text-white bg-info mb-3">
+                    <h2 class="card-header text-left">Project: {{ project.title }}</h2>
+                    <div class="card-body">
+                        <p class="card-text text-left">{{ project.description }}</p>
+                    </div>
+                </div>
 
-                <task-modal></task-modal>
+                <br>
 
-                <task-create-button></task-create-button>
-
-                <div>
+                <div class="d-flex justify-content-center group">
                     <button type="button" class="btn btn-secondary" :data-url="`/project/${project.id}`" @click="navigate" :disabled="get_type === 'all'">View All Tasks</button>
                     <button type="button" class="btn btn-secondary" :data-url="`/project/${project.id}?get=incomplete`" @click="navigate" :disabled="get_type === 'incomplete'">View Incomplete Tasks</button>
                     <button type="button" class="btn btn-secondary" :data-url="`/project/${project.id}?get=completed`" @click="navigate" :disabled="get_type === 'completed'">View Completed Tasks</button>
                 </div>
 
+                <br>
+
+                <task-create-button></task-create-button>
+
+                <br>
+
                 <div v-if="tasks.length">
                     <tasks-list :tasks="tasks"></tasks-list>
-                    <button type="button" class="btn btn-danger" @click="deleteCompletedTasks" :disabled="!completedTasks">Delete All Completed Tasks</button>
+
+                    <br>
+
+                    <button type="button" class="btn btn-danger" @click="deleteCompletedTasks" :hidden="!completedTasks">Delete All Completed Tasks</button>
                 </div>
 
                 <div v-else>
                     No tasks saved.
                 </div>
+
+                <br>
                 
                 <a href="/project">Back to My Projects page</a>
+
+                <br><br>
             </div>
             
-            <div class="col-3">
+            <div class="col-sm-3">
                 <events-list :projectId="project.id"></events-list>
             </div>
         </div>

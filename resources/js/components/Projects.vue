@@ -1,42 +1,53 @@
 <template>
     <div>
+
+        <project-modal></project-modal>
+        <div class="container">
         <div class="row">
-            <div class="col-9">
+            <div class="col-sm-9">
                 <h2>My Projects</h2>
 
-                <project-modal></project-modal>
-
-                <project-create-button></project-create-button>
-
-                <div>
+                <br>
+                
+                <div class="d-flex justify-content-center group">
                     <button type="button" class="btn btn-secondary" :data-url="`/project`" @click="navigate" :disabled="get_type === 'all'">View All Projects</button>
                     <button type="button" class="btn btn-secondary" :data-url="`/project?get=incomplete`" @click="navigate" :disabled="get_type === 'incomplete'">View Incomplete Projects</button>
                     <button type="button" class="btn btn-secondary" :data-url="`/project?get=completed`" @click="navigate" :disabled="get_type === 'completed'">View Completed Projects</button>
                     <button type="button" class="btn btn-secondary" :data-url="`/project?get=empty`" @click="navigate" :disabled="get_type === 'empty'">View Empty Projects</button>
                 </div>
 
+                <br>
+
+                <project-create-button></project-create-button>
+
+                <br>
+
                 <div v-if="projects.length">
                     <projects-grid :projects="projects"></projects-grid>
-                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'completed'" @click="deleteProjects">Delete All Completed Projects</button>
-                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'incomplete'" @click="deleteProjects">Delete All Incomplete Projects</button>
-                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'empty'" @click="deleteProjects">Delete All Empty Projects</button>
-                    <button type="button" class="btn btn-danger" :hidden="get_type !== 'all'" @click="deleteProjects">Delete All Projects</button>
+
+                    <br>
+                    
+                    <button type="button" class="btn btn-danger" @click="deleteProjects">Delete {{ capitalizeFirstLetter(get_type) }} Projects</button>
                 </div>
                 
                 <div v-else>
                     {{ noProjectsMessage }}
                 </div>
+
+                <br>
             </div>
             
-            <div class="col-3">
+            <div class="col-sm-3">
                 <events-list type="projects"></events-list>
             </div>
+        </div>
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { capitalizeFirstLetter } from '../helpers/textFunctions';
 
 export default {
     props: ['projects_json', 'get_type'],
@@ -77,6 +88,9 @@ export default {
             }).catch(err => {
                 console.log(err);
             });
+        },
+        capitalizeFirstLetter(text) {
+            return capitalizeFirstLetter(text);
         }
     }
 }

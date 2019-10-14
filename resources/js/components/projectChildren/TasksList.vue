@@ -1,30 +1,31 @@
 <template>
     <div>
-        <div v-for="task in tasks" :key="task.id">
-            <span :style="getStyle(task.completed)">
-                <span>{{ task.name }}</span>
-                <span>{{ dueBy(task.due_by) }}</span>
-                <span>{{ timer(task.due_by) }}</span>
-            </span>
-            <input type="checkbox" id="taskDueBy" name="completed" @click="changeStatus(task)" :checked="task.completed">
-            <button
-                type="button"
-                class="btn btn-primary"
-                @click="handleEdit(task)"
-                data-toggle="modal"
-                data-target="#createTaskModal"
-            >
-                Edit
-            </button>
-            <button type="button" class="btn btn-danger" @click="handleDelete(task.id)">
-                Delete
-            </button>
+        <div class="card text-left" v-for="task in tasks" :key="task.id">
+            <div class="card-body d-flex justify-content-between">
+                <span :style="getStyle(task.completed)">{{ task.name }}</span>
+                <div>
+                    <span :hidden="task.completed">{{ timer(task.due_by) }}</span>
+                    <input type="checkbox" id="taskDueBy" name="completed" @click="changeStatus(task)" :checked="task.completed">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        @click="handleEdit(task)"
+                        data-toggle="modal"
+                        data-target="#createTaskModal"
+                    >
+                        Edit
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm" @click="handleDelete(task.id)">
+                        Delete
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { dueBy, timeRemainingString } from '../../helpers/dateFunctions';
+import { timeRemainingString } from '../../helpers/dateFunctions';
 import { setInterval } from 'timers';
 export default {
     props: ['tasks'],
@@ -44,9 +45,6 @@ export default {
         clearInterval(this.timerId);
     },
     methods: {
-        dueBy(dateStr) {
-            return dueBy(dateStr);
-        },
         handleEdit(task) {
             this.$parent.$emit('editTask', task);
         },
@@ -79,3 +77,9 @@ export default {
     
 }
 </script>
+
+<style lang="scss" scoped>
+input {
+    margin: 0 5px;
+}
+</style>

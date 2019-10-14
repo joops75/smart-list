@@ -8,7 +8,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-left">
                     <form>
                         <div class="form-group">
                             <label for="taskName">Name</label>
@@ -92,7 +92,7 @@ export default {
     },
     computed: {
         isValid() {
-            return this.task.name && this.task.due_by && new Date(this.task.due_by).getDate();
+            return this.task.name && this.task.name.length < 256 && this.task.due_by && new Date(this.task.due_by).getDate();
         }
     }
 }

@@ -8,7 +8,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-left">
                     <form>
                         <div class="form-group">
                             <label for="projectTitle">Title</label>
@@ -80,7 +80,7 @@ export default {
     },
     computed: {
         isValid() {
-            return this.project.title && this.project.description;
+            return this.project.title && this.project.title.length < 256  && this.project.description;
         }
     }
 }

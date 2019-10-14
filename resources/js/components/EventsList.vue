@@ -2,12 +2,13 @@
     <div>
         <h3 v-if="type === 'projects'">All Updates</h3>
         <h3 v-else>Task Updates</h3>
-        <div v-for="event in events" :key="event.id">
-            {{ event.model }} "{{ event.name }}" {{ event.type }} at {{ formattedDate(event.created_at) }}
-        </div>
-        <button class="btn btn-secondary" @click="getMoreEvents" :disabled="eventsListFull">
-            {{ !events.length ? 'No updates to show' : eventsListFull ? 'All updates shown' : 'Show more...' }}
+        <ul class="text-left" v-for="event in events" :key="event.id">
+            <li>{{ modelType(event.task_id) }} "{{ event.name }}" {{ event.type }} at {{ formattedDate(event.created_at) }}</li>
+        </ul>
+        <button class="btn btn-secondary" @click="getMoreEvents" :hidden="eventsListFull">
+            Show more...
         </button>
+        <br><br>
         <button class="btn btn-danger" @click="deleteEvents" :hidden="!events.length">
             {{ getDeleteEventsMessage() }}
         </button>
@@ -73,6 +74,9 @@ export default {
         },
         getDeleteEventsMessage() {
             return this.type === 'projects' ? 'Delete all updates' : 'Delete all task updates';
+        },
+        modelType(taskId) {
+            return taskId ? 'Task' : 'Project';
         }
     },
     computed: {
