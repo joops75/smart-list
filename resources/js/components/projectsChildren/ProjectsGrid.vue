@@ -32,7 +32,7 @@ export default {
     props: ['projects'],
     methods: {
         handleEdit(project) {
-            this.$parent.$emit('edit', project);
+            this.$parent.$emit('editProject', project);
         },
         handleDelete(projectId) {
             if (!confirm('Are you sure you want to delete this project?')) {

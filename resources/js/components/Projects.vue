@@ -2,7 +2,7 @@
     <div>
 
         <project-modal></project-modal>
-        <div class="container">
+        
         <div class="row">
             <div class="col-sm-9">
                 <h2>My Projects</h2>
@@ -41,7 +41,7 @@
                 <events-list type="projects"></events-list>
             </div>
         </div>
-        </div>
+        
     </div>
 </template>
 
@@ -54,7 +54,7 @@ export default {
     components: {
         'project-create-button': require('./projectsChildren/ProjectCreateButton.vue').default,
         'projects-grid': require('./projectsChildren/ProjectsGrid.vue').default,
-        'project-modal': require('./projectsChildren/ProjectCreateEditModal.vue').default,
+        'project-modal': require('./projectsChildren/ProjectModal.vue').default,
         'events-list': require('./EventsList.vue').default
     },
     computed: {

@@ -46,11 +46,11 @@ export default {
         }
     },
     mounted() {
-        this.$parent.$on('create', () => {
+        this.$parent.$on('createProject', () => {
             this.mode = 'Create';
             this.project = new Project({});
         });
-        this.$parent.$on('edit', project => {
+        this.$parent.$on('editProject', project => {
             this.mode = 'Edit';
             this.project = new Project(project);
         });

@@ -1,6 +1,8 @@
 <template>
     <div>
 
+        <project-modal></project-modal>
+
         <task-modal></task-modal>
 
         <div class="row">
@@ -10,6 +12,18 @@
                     <div class="card-body">
                         <p class="card-text text-left">{{ project.description }}</p>
                     </div>
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        @click="handleEditProject(project)"
+                        data-toggle="modal"
+                        data-target="#createProjectModal"
+                    >
+                        Edit
+                    </button>
+                    <button type="button" class="btn btn-danger" @click="handleDeleteProject(project.id)">
+                        Delete
+                    </button>
                 </div>
 
                 <br>
@@ -61,7 +75,8 @@ export default {
         'task-modal': require('./projectChildren/TaskModal.vue').default,
         'task-create-button': require('./projectChildren/TaskCreateButton.vue').default,
         'tasks-list': require('./projectChildren/TasksList.vue').default,
-        'events-list': require('./EventsList.vue').default
+        'events-list': require('./EventsList.vue').default,
+        'project-modal': require('./projectsChildren/ProjectModal.vue').default
     },
     data() {
         return {
@@ -94,7 +109,21 @@ export default {
             }).catch(err => {
                 console.log(err);
             });
-        }
+        },
+        handleEditProject(project) {
+            this.$emit('editProject', project);
+        },
+        handleDeleteProject(projectId) {
+            if (!confirm('Are you sure you want to delete this project?')) {
+                return;
+            }
+            axios.delete(`/project/${projectId}`)
+                .then(() => {
+                    window.location.assign('/project');
+                }).catch(err => {
+                    console.log(err);
+                });
+        },
     }
 }
 </script>

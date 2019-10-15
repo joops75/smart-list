@@ -10,7 +10,7 @@
 export default {
     methods: {
         handleClick() {
-            this.$parent.$emit('create');
+            this.$parent.$emit('createProject');
         }
     }
 }
