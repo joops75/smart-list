@@ -25,8 +25,7 @@ class ProjectCreateTest extends DuskTestCase
                     ->type('email', $user->email)
                     ->type('password', 'password')
                     ->press('Login')
-                    ->assertPathIs('/home')
-                    ->visit('/project')
+                    ->assertPathIs('/project')
                     ->press('Create Project')
                     ->whenAvailable('#createProjectModal', function ($modal) {
                         $modal->type('#projectTitle', 'An awesome project')

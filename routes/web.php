@@ -19,8 +19,6 @@ Route::resource('project', 'ProjectController')->middleware('auth');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-
 Route::resource('task', 'TaskController')->only([
     'store', 'update', 'destroy'
 ])->middleware('auth');

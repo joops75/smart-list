@@ -24,8 +24,7 @@ class ProjectIndexTest extends DuskTestCase
                     ->type('email', $user->email)
                     ->type('password', 'password')
                     ->press('Login')
-                    ->assertPathIs('/home')
-                    ->visit('/project')
+                    ->assertPathIs('/project')
                     ->assertSee('No projects saved.');
         });
     }
