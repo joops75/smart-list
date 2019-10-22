@@ -4,7 +4,7 @@
         <project-modal></project-modal>
         
         <div class="row">
-            <div class="col-sm-9">
+            <div class="col-sm-9 text-center">
                 <h2>My Projects</h2>
 
                 <br>

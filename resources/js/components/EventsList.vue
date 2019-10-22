@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="text-center">
         <h3 v-if="type === 'projects'">All Updates</h3>
         <h3 v-else>Task Updates</h3>
         <ul class="text-left" v-for="event in events" :key="event.id">

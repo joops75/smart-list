@@ -6,7 +6,7 @@
         <task-modal></task-modal>
 
         <div class="row">
-            <div class="col-sm-9">
+            <div class="col-sm-9 text-center">
                 <div class="card text-white bg-info mb-3">
                     <h2 class="card-header text-left">Project: {{ project.title }}</h2>
                     <div class="card-body">

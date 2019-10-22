@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="jumbotron">
-        <div class="container text-left">
+        <div class="container">
             <h1 class="display-3">Welcome to {{ config('app.name', 'Smartlist') }}!</h1>
             <p>A better way to keep track of groups of tasks with a deadline. Create an account where you can make projects with associated tasks. Full viewing, editing and deleting functionality included.</p>
             @auth
@@ -15,7 +15,7 @@
         </div>
     </div>
     
-    <div class="container text-left">
+    <div class="container">
         <div class="row">
             <div class="col-md-4">
                 <h2><i class="fas fa-clock"></i> Real-Time Countdown</h2>

@@ -38477,6 +38477,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
+    { staticClass: "text-center" },
     [
       _vm.type === "projects"
         ? _c("h3", [_vm._v("All Updates")])
@@ -38556,7 +38557,7 @@ var render = function() {
       _c("div", { staticClass: "row" }, [
         _c(
           "div",
-          { staticClass: "col-sm-9" },
+          { staticClass: "col-sm-9 text-center" },
           [
             _c("div", { staticClass: "card text-white bg-info mb-3" }, [
               _c("h2", { staticClass: "card-header text-left" }, [
@@ -38732,7 +38733,7 @@ var render = function() {
       _c("div", { staticClass: "row" }, [
         _c(
           "div",
-          { staticClass: "col-sm-9" },
+          { staticClass: "col-sm-9 text-center" },
           [
             _c("h2", [_vm._v("My Projects")]),
             _vm._v(" "),
@@ -38929,7 +38930,7 @@ var render = function() {
             _vm._m(0)
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "modal-body text-left" }, [
+          _c("div", { staticClass: "modal-body" }, [
             _c("form", [
               _c("div", { staticClass: "form-group" }, [
                 _c("label", { attrs: { for: "taskName" } }, [_vm._v("Name")]),
@@ -39207,7 +39208,7 @@ var render = function() {
             _vm._m(0)
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "modal-body text-left" }, [
+          _c("div", { staticClass: "modal-body" }, [
             _c("form", [
               _c("div", { staticClass: "form-group" }, [
                 _c("label", { attrs: { for: "projectTitle" } }, [
@@ -52428,8 +52429,8 @@ var capitalizeFirstLetter = function capitalizeFirstLetter(text) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! c:\xampp\htdocs\smartlist\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! c:\xampp\htdocs\smartlist\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\smartlist\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\smartlist\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

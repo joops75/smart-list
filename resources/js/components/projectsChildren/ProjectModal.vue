@@ -8,7 +8,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body text-left">
+                <div class="modal-body">
                     <form>
                         <div class="form-group">
                             <label for="projectTitle">Title</label>
