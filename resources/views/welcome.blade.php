@@ -27,7 +27,7 @@
             </div>
             <div class="col-md-4">
                 <h2><i class="fas fa-trash-alt"></i> Bulk Deleting Available</h2>
-                <p>Besides being able to delete individual projects or tasks, there is also the option to delete en masse according to according to their completion status.</p>
+                <p>Besides being able to delete individual projects or tasks, there is also the option to delete en masse according to their completion status.</p>
             </div>
         </div>
     </div>
