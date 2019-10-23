@@ -38960,7 +38960,7 @@ var render = function() {
               _vm._v(" "),
               _c("div", { staticClass: "form-group" }, [
                 _c("label", { attrs: { for: "taskDueBy" } }, [
-                  _vm._v("Due By")
+                  _vm._v("Due By (YYYY-MM-DD HH:MM)")
                 ]),
                 _vm._v(" "),
                 _c("input", {

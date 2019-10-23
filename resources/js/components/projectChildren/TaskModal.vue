@@ -15,7 +15,7 @@
                             <input type="text" class="form-control" id="taskName" name="name" v-model="task.name">
                         </div>
                         <div class="form-group">
-                            <label for="taskDueBy">Due By</label>
+                            <label for="taskDueBy">Due By (YYYY-MM-DD HH:MM)</label>
                             <input type="text" class="form-control" id="taskDueBy" name="due_by" v-model="task.due_by">
                         </div>
                         <div class="form-group">
