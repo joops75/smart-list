@@ -48,6 +48,7 @@
 <script>
 import axios from 'axios';
 import { capitalizeFirstLetter } from '../helpers/textFunctions';
+import { confirmModal } from '../helpers/confirmFunctions';
 
 export default {
     props: ['projects_json', 'get_type'],
@@ -74,10 +75,10 @@ export default {
         navigate(e) {
             window.location.assign(e.target.dataset.url);
         },
-        deleteProjects() {
-            if (!confirm(`Are you sure you want to delete ${this.get_type} projects?`)) {
-                return;
-            }
+        async deleteProjects() {
+            const proceed = await confirmModal(`Are you sure you want to delete ${this.get_type} projects?`);
+            
+            if (!proceed) return;
 
             axios.delete('/project/0', {
                 params: {

@@ -10652,3 +10652,7 @@ button {
   margin: 5px;
 }
 
+.swal-button--danger {
+  background-color: #e3342f;
+}
+

@@ -68,6 +68,7 @@
 
 <script>
 import axios from 'axios';
+import { confirmModal } from '../helpers/confirmFunctions';
 
 export default {
     props: ['project_json', 'tasks_json', 'get_type'],
@@ -94,10 +95,10 @@ export default {
         navigate(e) {
             window.location.assign(e.target.dataset.url);
         },
-        deleteCompletedTasks() {
-            if (!confirm('Are you sure you want to delete all completed tasks for this project?')) {
-                return;
-            }
+        async deleteCompletedTasks() {
+            const proceed = await confirmModal('Are you sure you want to delete all completed tasks for this project?');
+            
+            if (!proceed) return;
             
             axios.delete(`/task/0`, {
                 params: {
@@ -113,10 +114,11 @@ export default {
         handleEditProject(project) {
             this.$emit('editProject', project);
         },
-        handleDeleteProject(projectId) {
-            if (!confirm('Are you sure you want to delete this project?')) {
-                return;
-            }
+        async handleDeleteProject(projectId) {
+            const proceed = await confirmModal('Are you sure you want to delete this project?');
+            
+            if (!proceed) return;
+
             axios.delete(`/project/${projectId}`)
                 .then(() => {
                     window.location.assign('/project');

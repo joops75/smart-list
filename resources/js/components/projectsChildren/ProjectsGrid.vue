@@ -27,6 +27,7 @@
 <script>
 import axios from 'axios';
 import { excerpt } from '../../helpers/textFunctions';
+import { confirmModal } from '../../helpers/confirmFunctions';
 
 export default {
     props: ['projects'],
@@ -34,10 +35,11 @@ export default {
         handleEdit(project) {
             this.$parent.$emit('editProject', project);
         },
-        handleDelete(projectId) {
-            if (!confirm('Are you sure you want to delete this project?')) {
-                return;
-            }
+        async handleDelete(projectId) {
+            const proceed = await confirmModal('Are you sure you want to delete this project?');
+            
+            if (!proceed) return;
+
             axios.delete(`/project/${projectId}`)
                 .then(() => {
                     window.location.reload();

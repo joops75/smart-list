@@ -17,6 +17,7 @@
 
 <script>
 import axios from 'axios';
+import { confirmModal } from '../helpers/confirmFunctions';
 import { dueBy } from '../helpers/dateFunctions';
 
 export default {
@@ -58,10 +59,10 @@ export default {
                     console.log(err);
                 });
         },
-        deleteEvents() {
-            if (!confirm(`Are you sure you want to ${this.getDeleteEventsMessage().toLowerCase()}?`)) {
-                return;
-            }
+        async deleteEvents() {
+            const proceed = await confirmModal(`Are you sure you want to ${this.getDeleteEventsMessage().toLowerCase()}?`);
+            
+            if (!proceed) return;
 
             const url = this.type === 'projects' ? '/event' : `/event?delete=tasks&projectId=${this.projectId}`;
             axios.delete(url)

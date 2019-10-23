@@ -27,6 +27,7 @@
 <script>
 import { timeRemainingString } from '../../helpers/dateFunctions';
 import { setInterval } from 'timers';
+import { confirmModal } from '../../helpers/confirmFunctions';
 export default {
     props: ['tasks'],
     data() {
@@ -48,10 +49,11 @@ export default {
         handleEdit(task) {
             this.$parent.$emit('editTask', task);
         },
-        handleDelete(taskId) {
-            if (!confirm('Are you sure you want to delete this task?')) {
-                return;
-            }
+        async handleDelete(taskId) {
+            const proceed = await confirmModal('Are you sure you want to delete this task?');
+            
+            if (!proceed) return;
+            
             axios.delete(`/task/${taskId}`)
                 .then(() => {
                     window.location.reload();
