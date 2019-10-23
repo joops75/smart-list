@@ -11,18 +11,20 @@
 |
 */
 
+Auth::routes();
+
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('project', 'ProjectController')->middleware('auth');
-
-Auth::routes();
+Route::resource('project', 'ProjectController')->except([
+    'create', 'edit'
+])->middleware('auth');
 
 Route::resource('task', 'TaskController')->only([
     'store', 'update', 'destroy'
 ])->middleware('auth');
 
-Route::get('event', 'EventController@getEvents');
+Route::get('event', 'EventController@getEvents')->middleware('auth');
 
-Route::delete('event', 'EventController@deleteEvents');
+Route::delete('event', 'EventController@deleteEvents')->middleware('auth');
